@@ -1,14 +1,15 @@
+from cpu.utils import compose_bytes, set_bit
+
 class Register:
 
     def __init__(self, value, size=8):
         if value < 2**size:
             self.value = value
             self.size = size
-            print(f'register initiated with value of {value}')
         else:
             raise ValueError('Registor value exceeds capacity!')
     
-    def setValue(self, value):
+    def set_value(self, value):
         if value < 2**self.size:
             self.value = value
         else:
@@ -17,9 +18,33 @@ class Register:
     def getSize(self):
         return self.size
     
-    def getValue(self):
+    def get_value(self):
         return self.value
+    
+    def increment(self):
+        self.value += 1
         
+    def decrement(self):
+        self.value -= 1
+
+"""
+7	z	Zero flag
+6	n	Subtraction flag (BCD)
+5	h	Half Carry flag (BCD)
+4	c	Carry flag
+"""
+class FlagRegister(Register):
+    def set_flag_zero(self, value):
+        self.value = set_bit(self.value, 7, value)
+
+    def set_flag_subtract(self, value):
+        self.value = set_bit(self.value, 6, value)
+
+    def set_flag_half_carry(self, value):
+        self.value = set_bit(self.value, 5, value)
+
+    def set_flag_carry(self, value):
+        self.value = set_bit(self.value, 4, value)
 
 class RegisterPair:
 
@@ -30,15 +55,15 @@ class RegisterPair:
         else:
             raise ValueError('Cannot join two registers without 8-bit of size')
     
-    def setValue(self, value):
+    def set_value(self, value):
         if value < 65536:
-            self.msr.setValue(value >> 8)
-            self.lsr.setValue(value & 0xFF)
+            self.msr.set_value(value >> 8)
+            self.lsr.set_value(value & 0xFF)
         else:
             raise ValueError('Registor value exceeds capacity!')
     
-    def getValue(self):
-        return (self.msr.getValue() << 8) | self.lsr.getValue()
+    def get_value(self):
+        return compose_bytes(self.msr.get_value(), self.lsr.get_value())
     
 
 
@@ -46,7 +71,7 @@ class CPURegisters:
 
     def __init__(self):
         self.a = Register(0x0)
-        self.f = Register(0x0)
+        self.f = FlagRegister(0x0)
         self.b = Register(0x0)
         self.c = Register(0x0)
         self.d = Register(0x0)
@@ -55,66 +80,67 @@ class CPURegisters:
         self.l = Register(0x0)
 
         self.sp = Register(0x0, 16)
-        self.pc = Register(0x0, 16)
+        self.pc = Register(0x100, 16)
 
+        self.af = RegisterPair(self.b, self.c)
         self.bc = RegisterPair(self.b, self.c)
         self.de = RegisterPair(self.d, self.e)
         self.hl = RegisterPair(self.h, self.l)
 
     
-    def set(self, register, value):
-        if register == 'A':
-            self.a.setValue(value)
-        elif register == 'B':
-            self.b.setValue(value)
-        elif register == 'C':
-            self.c.setValue(value)
-        elif register == 'D':
-            self.d.setValue(value)
-        elif register == 'E':
-            self.e.setValue(value)
-        elif register == 'F':
-            self.f.setValue(value)
-        elif register == 'H':
-            self.h.setValue(value)
-        elif register == 'L':
-            self.l.setValue(value)
-        elif register == 'SP':
-            self.sp.setValue(value)
-        elif register == 'PC':
-            self.pc.setValue(value)
-        elif register == 'BC':
-            self.bc.setValue(value)
-        elif register == 'DE':
-            self.de.setValue(value)
-        elif register == 'HL':
-            self.hl.setValue(value)
+    # def set(self, register, value):
+    #     if register == 'A':
+    #         self.a.set_value(value)
+    #     elif register == 'B':
+    #         self.b.set_value(value)
+    #     elif register == 'C':
+    #         self.c.set_value(value)
+    #     elif register == 'D':
+    #         self.d.set_value(value)
+    #     elif register == 'E':
+    #         self.e.set_value(value)
+    #     elif register == 'F':
+    #         self.f.set_value(value)
+    #     elif register == 'H':
+    #         self.h.set_value(value)
+    #     elif register == 'L':
+    #         self.l.set_value(value)
+    #     elif register == 'SP':
+    #         self.sp.set_value(value)
+    #     elif register == 'PC':
+    #         self.pc.set_value(value)
+    #     elif register == 'BC':
+    #         self.bc.set_value(value)
+    #     elif register == 'DE':
+    #         self.de.set_value(value)
+    #     elif register == 'HL':
+    #         self.hl.set_value(value)
 
     
-    def read(self, register):
-        if register == 'A':
-            return self.a.getValue()
-        elif register == 'B':
-            return self.b.getValue()
-        elif register == 'C':
-            return self.c.getValue()
-        elif register == 'D':
-            return self.d.getValue()
-        elif register == 'E':
-            return self.e.getValue()
-        elif register == 'F':
-            return self.f.getValue()
-        elif register == 'H':
-            return self.h.getValue()
-        elif register == 'L':
-            return self.l.getValue()
-        elif register == 'SP':
-            return self.sp.getValue()
-        elif register == 'PC':
-            return self.pc.getValue()
-        elif register == 'BC':
-            return self.bc.getValue()
-        elif register == 'DE':
-            return self.de.getValue()
-        elif register == 'HL':
-            return self.hl.getValue()
+    # def read(self, register):
+    #     if register == 'A':
+    #         return self.a.get_value()
+    #     elif register == 'B':
+    #         return self.b.get_value()
+    #     elif register == 'C':
+    #         return self.c.get_value()
+    #     elif register == 'D':
+    #         return self.d.get_value()
+    #     elif register == 'E':
+    #         return self.e.get_value()
+    #     elif register == 'F':
+    #         return self.f.get_value()
+    #     elif register == 'H':
+    #         return self.h.get_value()
+    #     elif register == 'L':
+    #         return self.l.get_value()
+    #     elif register == 'SP':
+    #         return self.sp.get_value()
+    #     elif register == 'PC':
+    #         return self.pc.get_value()
+    #     elif register == 'BC':
+    #         return self.bc.get_value()
+    #     elif register == 'DE':
+    #         return self.de.get_value()
+    #     elif register == 'HL':
+    #         return self.hl.get_value()
