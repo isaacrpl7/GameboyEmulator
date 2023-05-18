@@ -1,9 +1,9 @@
 from cpu import cpu
 from cartridge import rom
+from cpu.opcodes import *
 
 
 rom.load_file('snake.gb')
-
 
 
 # decoder = Decoder(rom.memory_array)

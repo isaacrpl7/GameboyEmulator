@@ -79,8 +79,8 @@ class CPURegisters:
         self.h = Register(0x0)
         self.l = Register(0x0)
 
-        self.sp = Register(0x0, 16)
-        self.pc = Register(0x100, 16)
+        self.sp = Register(0xFFFE, 16) # starts in 0xFFFE
+        self.pc = Register(0x100, 16) # starts in 0x100
 
         self.af = RegisterPair(self.b, self.c)
         self.bc = RegisterPair(self.b, self.c)
