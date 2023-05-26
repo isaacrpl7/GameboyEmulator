@@ -1,4 +1,4 @@
-from cpu.utils import compose_bytes, set_bit
+from cpu.utils import *
 
 class Register:
 
@@ -48,22 +48,36 @@ class FlagRegister(Register):
 
 class RegisterPair:
 
-    def __init__(self, msr, lsr):
-        if msr.getSize() == 8 and lsr.getSize() == 8:
-            self.msr = msr
-            self.lsr = lsr
+    def __init__(self, msb, lsb):
+        if msb.getSize() == 8 and lsb.getSize() == 8:
+            self.msb = msb
+            self.lsb = lsb
         else:
             raise ValueError('Cannot join two registers without 8-bit of size')
     
     def set_value(self, value):
         if value < 65536:
-            self.msr.set_value(value >> 8)
-            self.lsr.set_value(value & 0xFF)
+            self.msb.set_value(value >> 8)
+            self.lsb.set_value(value & 0xFF)
         else:
             raise ValueError('Registor value exceeds capacity!')
     
+    def get_msb(self):
+        return self.msb
+    
+    def get_lsb(self):
+        return self.lsb
+
     def get_value(self):
-        return compose_bytes(self.msr.get_value(), self.lsr.get_value())
+        return compose_bytes(self.msb.get_value(), self.lsb.get_value())
+    
+    def increment(self):
+        new_value = self.get_value() + 1
+        self.set_value(new_value)
+        
+    def decrement(self):
+        new_value = self.get_value() - 1
+        self.set_value(new_value)
     
 
 

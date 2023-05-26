@@ -4,7 +4,9 @@ from cpu.opcodes import *
 
 
 rom.load_file('snake.gb')
-
+cpu.print_registers()
+load_R_n8(cpu.registers.a)
+push_R16(cpu.registers.a)
 
 # decoder = Decoder(rom.memory_array)
 

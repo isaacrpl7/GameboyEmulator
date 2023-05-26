@@ -48,5 +48,5 @@ def read_address(address):
     if address_range(address) == 'ROM_BANK_00':
         return rom.memory_array[address]
 
-def write_address(address):
-    pass
+def write_address(address, byte):
+    print(f'Writing in address: {address}, byte: {byte}')
