@@ -6,7 +6,12 @@ from cpu.opcodes import *
 rom.load_file('snake.gb')
 cpu.print_registers()
 load_R_n8(cpu.registers.a)
-push_R16(cpu.registers.a)
+#load_R_n8(cpu.registers.a)
+load_R_n8(cpu.registers.b)
+push_R16(cpu.registers.bc)
+cpu.print_registers()
+add_A_R(cpu.registers.c)
+cpu.print_registers()
 
 # decoder = Decoder(rom.memory_array)
 

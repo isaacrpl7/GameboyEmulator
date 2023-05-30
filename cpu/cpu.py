@@ -30,7 +30,7 @@ class CPU:
         print(f'H: {hex(self.registers.h.get_value())}')
         print(f'L: {hex(self.registers.l.get_value())}')
         print('')
-        print(f'F: {hex(self.registers.f.get_value())}')
+        print(f'Flags: Z: {hex(self.registers.f.get_flag_zero())} S:{hex(self.registers.f.get_flag_subtract())} H:{hex(self.registers.f.get_flag_half_carry())} C:{hex(self.registers.f.get_flag_carry())}')
         print('')
         print(f'SP: {hex(self.registers.sp.get_value())}')
         print(f'PC: {hex(self.registers.pc.get_value())}')

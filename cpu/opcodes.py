@@ -136,3 +136,15 @@ def pop_R16(register: RegisterPair):
 
     value = compose_bytes(high_signif, low_signf)
     register.set_value(value)
+
+
+# 8-BIT ARITHMETIC
+def add_A_R(register: Register):
+    value = register.get_value() + cpu.registers.a.get_value()
+
+    cpu.registers.f.set_flag_zero(value == 0)
+    cpu.registers.f.set_flag_subtract(False)
+    cpu.registers.f.set_flag_half_carry((register.get_value() & 0xF) + (cpu.registers.a.get_value() & 0xF) > 0xF)
+    cpu.registers.f.set_flag_carry(value > 0xFF)
+
+    cpu.registers.a.set_value(value & 0xFF)
