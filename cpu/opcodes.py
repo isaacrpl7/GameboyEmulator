@@ -142,9 +142,139 @@ def pop_R16(register: RegisterPair):
 def add_A_R(register: Register):
     value = register.get_value() + cpu.registers.a.get_value()
 
-    cpu.registers.f.set_flag_zero(value == 0)
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
     cpu.registers.f.set_flag_subtract(False)
     cpu.registers.f.set_flag_half_carry((register.get_value() & 0xF) + (cpu.registers.a.get_value() & 0xF) > 0xF)
     cpu.registers.f.set_flag_carry(value > 0xFF)
+
+    cpu.registers.a.set_value(value & 0xFF)
+
+def add_A_n8():
+    content = cpu.read_byte_from_pc()
+    value = content + cpu.registers.a.get_value()
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(False)
+    cpu.registers.f.set_flag_half_carry((content & 0xF) + (cpu.registers.a.get_value() & 0xF) > 0xF)
+    cpu.registers.f.set_flag_carry(value > 0xFF)
+
+    cpu.registers.a.set_value(value & 0xFF)
+
+def add_A_HLm():
+    """ A = A + (HL) """
+    content = read_address(cpu.registers.hl.get_value())
+    value = content + cpu.registers.a.get_value()
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(False)
+    cpu.registers.f.set_flag_half_carry((content & 0xF) + (cpu.registers.a.get_value() & 0xF) > 0xF)
+    cpu.registers.f.set_flag_carry(value > 0xFF)
+
+    cpu.registers.a.set_value(value & 0xFF)
+
+def adc_A_R(register: Register):
+    """ Adding with carry """
+    value = register.get_value() + cpu.registers.a.get_value() + cpu.registers.f.get_flag_carry()
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(False)
+    cpu.registers.f.set_flag_half_carry((register.get_value() & 0xF) + (cpu.registers.a.get_value() & 0xF) + cpu.registers.f.get_flag_carry() > 0xF)
+    cpu.registers.f.set_flag_carry(value > 0xFF)
+
+    cpu.registers.a.set_value(value & 0xFF)
+
+def adc_A_n8():
+    """ Adding with carry """
+    content = cpu.read_byte_from_pc()
+    value = content + cpu.registers.a.get_value() + cpu.registers.f.get_flag_carry()
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(False)
+    cpu.registers.f.set_flag_half_carry((content & 0xF) + (cpu.registers.a.get_value() & 0xF) + cpu.registers.f.get_flag_carry() > 0xF)
+    cpu.registers.f.set_flag_carry(value > 0xFF)
+
+    cpu.registers.a.set_value(value & 0xFF)
+
+def adc_A_HLm():
+    """ Adding with carry """
+    content = read_address(cpu.registers.hl.get_value())
+    value = content + cpu.registers.a.get_value() + cpu.registers.f.get_flag_carry()
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(False)
+    cpu.registers.f.set_flag_half_carry((content & 0xF) + (cpu.registers.a.get_value() & 0xF) + cpu.registers.f.get_flag_carry() > 0xF)
+    cpu.registers.f.set_flag_carry(value > 0xFF)
+
+    cpu.registers.a.set_value(value & 0xFF)
+
+def sub_R(register: Register):
+    """ A = A - R """
+    content = register.get_value()
+    value = cpu.registers.a.get_value() - content
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(True)
+    cpu.registers.f.set_flag_half_carry((cpu.registers.a.get_value() & 0xF) - (content & 0xF) < 0)
+    cpu.registers.f.set_flag_carry(value < 0)
+
+    cpu.registers.a.set_value(value & 0xFF)
+
+def sub_n8():
+    """ A = A - n8 """
+    content = cpu.read_byte_from_pc()
+    value = cpu.registers.a.get_value() - content
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(True)
+    cpu.registers.f.set_flag_half_carry((cpu.registers.a.get_value() & 0xF) - (content & 0xF) < 0)
+    cpu.registers.f.set_flag_carry(value < 0)
+
+    cpu.registers.a.set_value(value & 0xFF)
+
+def sub_HLm():
+    """ A = A - (HL) """
+    content = read_address(cpu.registers.hl.get_value())
+    value = cpu.registers.a.get_value() - content
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(True)
+    cpu.registers.f.set_flag_half_carry((cpu.registers.a.get_value() & 0xF) - (content & 0xF) < 0)
+    cpu.registers.f.set_flag_carry(value < 0)
+
+    cpu.registers.a.set_value(value & 0xFF)
+
+def sbc_R(register: Register):
+    """ A = A - R - carry """
+    content = register.get_value()
+    value = cpu.registers.a.get_value() - content - cpu.registers.f.get_flag_carry()
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(True)
+    cpu.registers.f.set_flag_half_carry((cpu.registers.a.get_value() & 0xF) - (content & 0xF) - cpu.registers.f.get_flag_carry() < 0)
+    cpu.registers.f.set_flag_carry(value < 0)
+
+    cpu.registers.a.set_value(value & 0xFF)
+
+def sbc_n8():
+    """ A = A - n8 - carry """
+    content = cpu.read_byte_from_pc()
+    value = cpu.registers.a.get_value() - content - cpu.registers.f.get_flag_carry()
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(True)
+    cpu.registers.f.set_flag_half_carry((cpu.registers.a.get_value() & 0xF) - (content & 0xF) - cpu.registers.f.get_flag_carry() < 0)
+    cpu.registers.f.set_flag_carry(value < 0)
+
+    cpu.registers.a.set_value(value & 0xFF)
+
+def sbc_HLm():
+    """ A = A - (HL) - carry"""
+    content = read_address(cpu.registers.hl.get_value())
+    value = cpu.registers.a.get_value() - content - cpu.registers.f.get_flag_carry()
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(True)
+    cpu.registers.f.set_flag_half_carry((cpu.registers.a.get_value() & 0xF) - (content & 0xF) - cpu.registers.f.get_flag_carry() < 0)
+    cpu.registers.f.set_flag_carry(value < 0)
 
     cpu.registers.a.set_value(value & 0xFF)

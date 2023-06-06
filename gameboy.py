@@ -12,6 +12,8 @@ push_R16(cpu.registers.bc)
 cpu.print_registers()
 add_A_R(cpu.registers.c)
 cpu.print_registers()
+sub_R(cpu.registers.b)
+cpu.print_registers()
 
 # decoder = Decoder(rom.memory_array)
 
