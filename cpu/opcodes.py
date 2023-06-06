@@ -278,3 +278,93 @@ def sbc_HLm():
     cpu.registers.f.set_flag_carry(value < 0)
 
     cpu.registers.a.set_value(value & 0xFF)
+
+def and_A_R(register: Register):
+    content = register.get_value()
+    value = cpu.registers.a.get_value() & content
+    cpu.registers.a.set_value(value)
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(False)
+    cpu.registers.f.set_flag_half_carry(True)
+    cpu.registers.f.set_flag_carry(False)
+
+def and_A_n8():
+    content = cpu.read_byte_from_pc()
+    value = cpu.registers.a.get_value() & content
+    cpu.registers.a.set_value(value)
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(False)
+    cpu.registers.f.set_flag_half_carry(True)
+    cpu.registers.f.set_flag_carry(False)
+
+def and_A_HLm():
+    content = read_address(cpu.registers.hl.get_value())
+    value = cpu.registers.a.get_value() & content
+    cpu.registers.a.set_value(value)
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(False)
+    cpu.registers.f.set_flag_half_carry(True)
+    cpu.registers.f.set_flag_carry(False)
+
+def xor_A_R(register: Register):
+    content = register.get_value()
+    value = cpu.registers.a.get_value() ^ content
+    cpu.registers.a.set_value(value)
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(False)
+    cpu.registers.f.set_flag_half_carry(False)
+    cpu.registers.f.set_flag_carry(False)
+
+def xor_A_n8():
+    content = cpu.read_byte_from_pc()
+    value = cpu.registers.a.get_value() ^ content
+    cpu.registers.a.set_value(value)
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(False)
+    cpu.registers.f.set_flag_half_carry(False)
+    cpu.registers.f.set_flag_carry(False)
+
+def xor_A_HLm():
+    content = read_address(cpu.registers.hl.get_value())
+    value = cpu.registers.a.get_value() ^ content
+    cpu.registers.a.set_value(value)
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(False)
+    cpu.registers.f.set_flag_half_carry(False)
+    cpu.registers.f.set_flag_carry(False)
+
+def or_A_R(register: Register):
+    content = register.get_value()
+    value = cpu.registers.a.get_value() | content
+    cpu.registers.a.set_value(value)
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(False)
+    cpu.registers.f.set_flag_half_carry(False)
+    cpu.registers.f.set_flag_carry(False)
+
+def or_A_n8():
+    content = cpu.read_byte_from_pc()
+    value = cpu.registers.a.get_value() | content
+    cpu.registers.a.set_value(value)
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(False)
+    cpu.registers.f.set_flag_half_carry(False)
+    cpu.registers.f.set_flag_carry(False)
+
+def or_A_HLm():
+    content = read_address(cpu.registers.hl.get_value())
+    value = cpu.registers.a.get_value() | content
+    cpu.registers.a.set_value(value)
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(False)
+    cpu.registers.f.set_flag_half_carry(False)
+    cpu.registers.f.set_flag_carry(False)
