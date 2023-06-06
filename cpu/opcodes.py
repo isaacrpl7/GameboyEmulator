@@ -368,3 +368,100 @@ def or_A_HLm():
     cpu.registers.f.set_flag_subtract(False)
     cpu.registers.f.set_flag_half_carry(False)
     cpu.registers.f.set_flag_carry(False)
+
+def cp_A_R(register: Register):
+    """ Compare A and R (subtract without storing)"""
+    content = register.get_value()
+    value = cpu.registers.a.get_value() - content
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(True)
+    cpu.registers.f.set_flag_half_carry((cpu.registers.a.get_value() & 0xF) - (content & 0xF) < 0)
+    cpu.registers.f.set_flag_carry(value < 0)
+
+def cp_A_n8():
+    """ Compare A and n8 (subtract without storing)"""
+    content = cpu.read_byte_from_pc()
+    value = cpu.registers.a.get_value() - content
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(True)
+    cpu.registers.f.set_flag_half_carry((cpu.registers.a.get_value() & 0xF) - (content & 0xF) < 0)
+    cpu.registers.f.set_flag_carry(value < 0)
+
+def cp_A_HLm():
+    """ Compare A and (HL) (subtract without storing)"""
+    content = read_address(cpu.registers.hl.get_value())
+    value = cpu.registers.a.get_value() - content
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(True)
+    cpu.registers.f.set_flag_half_carry((cpu.registers.a.get_value() & 0xF) - (content & 0xF) < 0)
+    cpu.registers.f.set_flag_carry(value < 0)
+
+def inc_R(register:Register):
+    content = register.get_value()
+    value = content + 1
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(False)
+    cpu.registers.f.set_flag_half_carry((register.get_value() & 0xF) + 1 > 0xF)
+
+    register.set_value((value & 0xFF))
+
+def inc_HLm():
+    content = read_address(cpu.registers.hl.get_value())
+    value = content + 1
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(False)
+    cpu.registers.f.set_flag_half_carry((content & 0xF) + 1 > 0xF)
+
+    write_address(cpu.registers.hl.get_value(), value & 0xFF)
+
+def dec_R(register: Register):
+    content = register.get_value()
+    value = content - 1
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(True)
+    cpu.registers.f.set_flag_half_carry((content & 0xF) - 1 < 0)
+
+    register.set_value(value & 0xFF)
+
+def dec_HLm():
+    content = read_address(cpu.registers.hl.get_value())
+    value = content - 1
+
+    cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
+    cpu.registers.f.set_flag_subtract(True)
+    cpu.registers.f.set_flag_half_carry((content & 0xF) - 1 < 0)
+
+    write_address(cpu.registers.hl.get_value(), value & 0xFF)
+
+def daa():
+    """ Transform A register into BCD representation using carry if necessary """
+    a_value = cpu.registers.a.get_value()
+    if not cpu.registers.f.get_flag_subtract(): # after an addition, adjust if (half-)carry occurred or if result is out of bounds
+        if cpu.registers.f.get_flag_carry() or a_value > 0x99:
+            a_value += 0x60
+            cpu.registers.f.set_flag_carry(True)
+        if cpu.registers.f.get_flag_half_carry() or (a_value & 0x0F) > 0x09:
+            a_value += 0x06
+    else: # after a subtraction, only adjust if (half-)carry occurred
+        if cpu.registers.f.get_flag_carry():
+            a_value -= 0x60
+        if cpu.registers.f.get_flag_half_carry():
+            a_value -= 0x06
+    
+    cpu.registers.a.set_value((a_value & 0xFF))
+    cpu.registers.f.set_flag_zero((a_value & 0xFF) == 0)
+    cpu.registers.f.set_flag_half_carry(False)
+
+def cpl():
+    """ A = A xor FF """
+    content = cpu.registers.a.get_value()
+    cpu.registers.a.set_value(content ^ 0xFF)
+
+    cpu.registers.f.set_flag_subtract(True)
+    cpu.registers.f.set_flag_half_carry(True)
