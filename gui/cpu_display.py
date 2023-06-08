@@ -10,7 +10,7 @@ class DisplayCPU:
 
     def init_gui(self, registers: dict, step):
         label_a = tk.Label(master=self.window, text="Registers:", font='Helvetica 9 bold')
-        label_a.grid(row=0, column=0)
+        label_a.grid(row=0, column=0, padx=5, pady=0, sticky='W')
 
         for i, register in enumerate(['A', 'B', 'C', 'D', 'E']):
             frame = tk.Frame(
@@ -33,7 +33,7 @@ class DisplayCPU:
             self.registers_labels[5+i].pack(padx=5, pady=5)
         
         label_b = tk.Label(master=self.window, text="Flags:", font='Helvetica 9 bold')
-        label_b.grid(row=3, column=0, padx=0, pady=0)
+        label_b.grid(row=3, column=0, padx=5, pady=0, sticky='W')
 
         for i, register in enumerate(['Z', 'S', 'H', 'C']):
             frame = tk.Frame(
@@ -46,7 +46,7 @@ class DisplayCPU:
             self.registers_labels[7+i].pack(padx=5, pady=5)
         
         PC_label = tk.Label(master=self.window, text="PC and SP:", font='Helvetica 9 bold')
-        PC_label.grid(row=5, column=0, padx=0, pady=0)
+        PC_label.grid(row=5, column=0, padx=5, pady=0, sticky='W')
 
         pc_frame = tk.Frame(
                 master=self.window,
@@ -67,7 +67,7 @@ class DisplayCPU:
         self.sp_label.pack(padx=5, pady=5)
 
         btn_step = tk.Button(text="Step", command=step)
-        btn_step.grid(row=7, column=0, sticky="nsew")
+        btn_step.grid(row=7, column=0, padx=5, pady=5, sticky="nsew")
 
         self.window.mainloop()
 
