@@ -9,7 +9,8 @@ from cpu.utils import *
     which will control the PC by itself
 """
 
-
+def nop():
+    pass
 # 8-BIT LOAD INSTRUCTIONS
 def load_R_n8(register: Register):
     """ LD R, n8
@@ -465,3 +466,4 @@ def cpl():
 
     cpu.registers.f.set_flag_subtract(True)
     cpu.registers.f.set_flag_half_carry(True)
+
