@@ -1,74 +1,57 @@
-import tkinter as tk
+import sys
+from PyQt5 import QtWidgets, uic, QtWidgets
 
-class DisplayCPU:
+qtcreator_file  = "./gui/gui_qt.ui" # Enter file here.
+Ui_MainWindow, QtBaseClass = uic.loadUiType(qtcreator_file)
 
+
+class QTCPUDisplay(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
-        self.registers_labels = []
-        
-        self.window = tk.Tk()
-        self.window.title("CPU Registers")
-        self.window.configure(bg="#c5ccd6")
+        QtWidgets.QMainWindow.__init__(self)
 
-    def init_gui(self, registers: dict, step):
-        label_a = tk.Label(master=self.window, text="Registers:", font='Helvetica 9 bold',background="#c5ccd6")
-        label_a.grid(row=0, column=0, padx=5, pady=0, sticky='W')
+    def init_gui(self, registers: dict, step_function):
+        Ui_MainWindow.__init__(self)
+        self.setupUi(self)
+        self.show()
+        self.step_button.clicked.connect(lambda: step_function())
+        self.setWindowTitle("CPU debugger")
 
-        registers_frame = tk.Frame(
-            master=self.window,
-            relief=tk.RAISED,
-            borderwidth=1,
-        )
-        registers_frame.grid(row=1, column=0, padx=5, pady=5, sticky='W')
-        for i, register in enumerate(['A', 'B', 'C', 'D', 'E']):
-            self.registers_labels.append(tk.Label(master=registers_frame, text=f"{register}\nValue: 0x{registers[register][2:].upper()}"))
-            self.registers_labels[i].grid(row=0, column=i, padx=5, pady=5)
+        self.label_a.setText(f"A\nValue: {registers['A']}")
+        self.label_b.setText(f"B\nValue: {registers['B']}")
+        self.label_c.setText(f"C\nValue: {registers['C']}")
+        self.label_d.setText(f"D\nValue: {registers['D']}")
+        self.label_e.setText(f"E\nValue: {registers['E']}")
+        self.label_h.setText(f"H\nValue: {registers['H']}")
+        self.label_l.setText(f"L\nValue: {registers['L']}")
 
-        for i, register in enumerate(['H', 'L']):
-            self.registers_labels.append(tk.Label(master=registers_frame, text=f"{register}\nValue: 0x{registers[register][2:].upper()}"))
-            self.registers_labels[5+i].grid(row=1, column=i, padx=5, pady=5)
-        
-        label_b = tk.Label(master=self.window, text="Flags:", font='Helvetica 9 bold',background="#c5ccd6")
-        label_b.grid(row=2, column=0, padx=5, pady=0, sticky='W')
+        self.label_z.setText(f"Z\nValue: {registers['Z']}")
+        self.label_s.setText(f"S\nValue: {registers['S']}")
+        self.label_hc.setText(f"HC\nValue: {registers['HC']}")
+        self.label_carry.setText(f"Cx\nValue: {registers['CR']}")
+        self.label_sp.setText(f"SP\nValue: {registers['SP']}")
+        self.label_pc.setText(f"PC\nValue: {registers['PC']}")
 
-        flags_frame = tk.Frame(
-            master=self.window,
-            relief=tk.RAISED,
-            borderwidth=1,
-        )
-        flags_frame.grid(row=3, column=0, padx=5, pady=5, sticky='W')
-        for i, register in enumerate(['Z', 'S', 'H', 'C']):
-            self.registers_labels.append(tk.Label(master=flags_frame, text=f"{register}\nValue: 0x{registers[register][2:].upper()}"))
-            self.registers_labels[7+i].grid(row=0, column=i, padx=5, pady=5)
-        
-        PC_label = tk.Label(master=self.window, text="PC and SP:", font='Helvetica 9 bold',background="#c5ccd6")
-        PC_label.grid(row=4, column=0, padx=5, pady=0, sticky='W')
 
-        sp_pc_frame = tk.Frame(
-            master=self.window,
-            relief=tk.RAISED,
-            borderwidth=1,
-        )
-        sp_pc_frame.grid(row=5, column=0, padx=5, pady=5, sticky='W')
-        self.pc_label = tk.Label(master=sp_pc_frame, text=f"PC\nValue: 0x{registers['PC'][2:].upper()}")
-        self.pc_label.grid(row=0, column=0, padx=5, pady=5)
+    def update_registers(self, registers:dict):
+        self.label_a.setText(f"A\nValue: {registers['A']}")
+        self.label_b.setText(f"B\nValue: {registers['B']}")
+        self.label_c.setText(f"C\nValue: {registers['C']}")
+        self.label_d.setText(f"D\nValue: {registers['D']}")
+        self.label_e.setText(f"E\nValue: {registers['E']}")
+        self.label_h.setText(f"H\nValue: {registers['H']}")
+        self.label_l.setText(f"L\nValue: {registers['L']}")
 
-        self.sp_label = tk.Label(master=sp_pc_frame, text=f"SP\nValue: 0x{registers['SP'][2:].upper()}")
-        self.sp_label.grid(row=0, column=1,padx=5, pady=5)
+        self.label_z.setText(f"Z\nValue: {registers['Z']}")
+        self.label_s.setText(f"S\nValue: {registers['S']}")
+        self.label_hc.setText(f"HC\nValue: {registers['HC']}")
+        self.label_carry.setText(f"Cx\nValue: {registers['CR']}")
+        self.label_sp.setText(f"SP\nValue: {registers['SP']}")
+        self.label_pc.setText(f"PC\nValue: {registers['PC']}")
 
-        btn_step = tk.Button(master=self.window,text="Step", command=step)
-        btn_step.grid(row=6, column=0, padx=5, pady=5, sticky="nsew")
-
-        self.window.mainloop()
-
-    def update(self, registers:dict):
-        for idx, register in enumerate(['A', 'B', 'C', 'D', 'E']):
-            self.registers_labels[idx]['text'] = f"{register}\nValue: 0x{registers[register][2:].upper()}"
-
-        for idx, register in enumerate(['H', 'L']):
-            self.registers_labels[5+idx]['text'] = f"{register}\nValue: 0x{registers[register][2:].upper()}"
-
-        for idx, register in enumerate(['Z', 'S', 'H', 'C']):
-            self.registers_labels[7+idx]['text'] = f"{register}\nValue: 0x{registers[register][2:].upper()}"
-            
-        self.pc_label['text'] = f"PC\nValue: 0x{registers['PC'][2:].upper()}"
-        self.sp_label['text'] = f"SP\nValue: 0x{registers['SP'][2:].upper()}"
+    def insert_instruction(self, instruction: str, address: str, opcode: str):
+        rowPosition = self.instructions_table.rowCount()
+        self.instructions_table.insertRow(rowPosition)
+        self.instructions_table.setItem(rowPosition , 0, QtWidgets.QTableWidgetItem(instruction))
+        self.instructions_table.setItem(rowPosition , 1, QtWidgets.QTableWidgetItem(address))
+        self.instructions_table.setItem(rowPosition , 2, QtWidgets.QTableWidgetItem(opcode))
+        self.instructions_table.scrollToBottom()

@@ -30,8 +30,8 @@ class CPU:
             'L': hex(self.registers.l.get_value()),
             'Z': hex(self.registers.f.get_flag_zero()),
             'S': hex(self.registers.f.get_flag_subtract()),
-            'H': hex(self.registers.f.get_flag_half_carry()),
-            'C': hex(self.registers.f.get_flag_carry()),
+            'HC': hex(self.registers.f.get_flag_half_carry()),
+            'CR': hex(self.registers.f.get_flag_carry()),
             'SP': hex(self.registers.sp.get_value()),
             'PC': hex(self.registers.pc.get_value())
         }
