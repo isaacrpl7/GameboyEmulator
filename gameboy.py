@@ -26,8 +26,8 @@ def step():
     cpu_gui.insert_instruction(hex(addr), decoder.print_instruction(inst), hex(opcode))
     
     # Implement and execute opcode map
-    error = run_opcode(opcode)
-    if error == -1: # If opcode does not exist, just increase PC without executing
+    cycles = run_opcode(opcode)
+    if cycles == 0: # If opcode does not exist, just increase PC without executing
         cpu.registers.pc.set_value(next_addr)
     cpu_gui.update_registers(cpu.return_registers())
 
