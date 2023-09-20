@@ -6,7 +6,7 @@ import json
 
 @dataclass
 class ROM:
-    memory_array: bytearray = bytearray([])
+    memory_array: bytearray = field(default_factory=list)
     cartridge_header: dict = field(default_factory=dict)
 
     def load_file(self, rom_path):

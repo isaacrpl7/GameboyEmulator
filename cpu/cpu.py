@@ -6,6 +6,7 @@ class CPU:
     
     def __init__(self):
         self.registers = CPURegisters()
+        self.change_cycle = False
     
     def read_byte_from_pc(self):
         content = read_address(self.registers.pc.get_value())
@@ -17,6 +18,29 @@ class CPU:
         lsb = self.read_byte_from_pc()
         msb = self.read_byte_from_pc()
         return compose_bytes(msb, lsb)
+
+    def set_change_cycle(self, value):
+        self.change_cycle = value
+    
+    def reset_change_cycle(self):
+        has_cycle_change = self.change_cycle
+        self.change_cycle = False
+        return has_cycle_change
+
+    def check_condition(self, condition):
+        condition_valuation = False
+        match condition:
+            case "C": # Condition is to have the carry flag active
+                condition_valuation = self.registers.f.get_flag_carry()
+            case "NC": # Condition is to have the carry flag set 0
+                condition_valuation = not self.registers.f.get_flag_carry()
+            case "Z": # Condition is to have the zero flag set 1
+                condition_valuation = self.registers.f.get_flag_zero()
+            case "NZ": # Condition is to have the zero flag set 0
+                condition_valuation = not self.registers.f.get_flag_zero()
+        if condition_valuation:
+            self.set_change_cycle(True)
+        return condition_valuation
 
     # Debug purposes
     def return_registers(self):

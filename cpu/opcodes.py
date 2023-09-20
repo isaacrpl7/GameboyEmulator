@@ -467,3 +467,17 @@ def cpl():
     cpu.registers.f.set_flag_subtract(True)
     cpu.registers.f.set_flag_half_carry(True)
 
+# JUMP INSTRUCTIONS
+
+def jp_nn():
+    address = cpu.read_word_from_pc()
+    cpu.registers.pc.set_value(address)
+
+def jp_hl():
+    cpu.registers.pc.set_value(cpu.registers.hl.get_value())
+
+def jp_cond(condition: str):
+    if cpu.check_condition(condition): # Remember to change cycle number: 3 cycles if condition is false, 4 cycles if it is true
+        jp_nn()
+    else:
+        cpu.read_word_from_pc()
