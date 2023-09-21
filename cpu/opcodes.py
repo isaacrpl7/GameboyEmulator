@@ -481,3 +481,14 @@ def jp_cond(condition: str):
         jp_nn()
     else:
         cpu.read_word_from_pc()
+
+def jr_nn():
+    pc_value = cpu.registers.pc.get_value()
+    offset = cpu.read_byte_from_pc()
+    cpu.registers.pc.set_value(pc_value + offset)
+
+def jr_cond(condition: str):
+    if cpu.check_condition(condition):
+        jr_nn()
+    else:
+        cpu.read_byte_from_pc()

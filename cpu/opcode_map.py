@@ -20,11 +20,11 @@ opcode_cycles = [
     3, 3, 2, 1, 0, 4, 2, 4, 3, 2, 4, 1, 0, 0, 2, 4
 ]
 
-opcode_cycles_changed = [
+opcode_cycles_changed = [ # Some instructions change their cycle number based on a condition. (Note that this happens only with some jump, call and ret instructions)
     1, 3, 2, 2, 1, 1, 2, 1, 5, 2, 2, 2, 1, 1, 2, 1,
     1, 3, 2, 2, 1, 1, 2, 1, 3, 2, 2, 2, 1, 1, 2, 1,
-    2, 3, 2, 2, 1, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1,
-    2, 3, 2, 2, 3, 3, 3, 1, 2, 2, 2, 2, 1, 1, 2, 1,
+    3, 3, 2, 2, 1, 1, 2, 1, 3, 2, 2, 2, 1, 1, 2, 1,
+    3, 3, 2, 2, 3, 3, 3, 1, 3, 2, 2, 2, 1, 1, 2, 1,
     1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
     1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
     1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
@@ -33,8 +33,8 @@ opcode_cycles_changed = [
     1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
     1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
     1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
-    2, 3, 3, 4, 3, 4, 2, 4, 2, 4, 3, 0, 3, 6, 2, 4,
-    2, 3, 3, 0, 3, 4, 2, 4, 2, 4, 3, 0, 3, 0, 2, 4,
+    5, 3, 4, 4, 6, 4, 2, 4, 5, 4, 4, 0, 6, 6, 2, 4,
+    5, 3, 4, 0, 6, 4, 2, 4, 5, 4, 4, 0, 6, 0, 2, 4,
     3, 3, 2, 0, 0, 4, 2, 4, 4, 1, 4, 0, 0, 0, 2, 4,
     3, 3, 2, 1, 0, 4, 2, 4, 3, 2, 4, 1, 0, 0, 2, 4
 ]
@@ -65,7 +65,7 @@ def run_opcode(opcode: int):
         0x15: [dec_R, [cpu.registers.d]],
         0x16: [load_R_n8, [cpu.registers.d]],
 
-
+        0x18: [jr_nn],
 
         0x1A: [load_R1_R2m, [cpu.registers.a, cpu.registers.de]],
 
@@ -73,7 +73,7 @@ def run_opcode(opcode: int):
         0x1D: [dec_R, [cpu.registers.e]],
         0x1E: [load_R_n8, [cpu.registers.e]],
 
-        
+        0x20: [jr_cond, ["NZ"]],
         0x21: [load_R_n16, [cpu.registers.hl]],
         0x22: [load_inc_mR_R2, [cpu.registers.hl, cpu.registers.a]],
 
@@ -81,7 +81,7 @@ def run_opcode(opcode: int):
         0x25: [dec_R, [cpu.registers.h]],
         0x26: [load_R_n8, [cpu.registers.h]],
         0x27: [daa],
-
+        0x28: [jr_cond, ["Z"]],
 
         0x2A: [load_inc_R_R2m, [cpu.registers.a, cpu.registers.hl]],
 
@@ -89,7 +89,7 @@ def run_opcode(opcode: int):
         0x2D: [dec_R, [cpu.registers.l]],
         0x2E: [load_R_n8, [cpu.registers.l]],
         0x2F: [cpl],
-
+        0x30: [jr_cond, ["NC"]],
         0x31: [load_R_n16, [cpu.registers.sp]],
         0x32: [load_dec_mR_R2, [cpu.registers.hl, cpu.registers.a]],
 
@@ -97,6 +97,7 @@ def run_opcode(opcode: int):
         0x35: [dec_HLm],
         0x36: [load_Rm_n8, [cpu.registers.hl]],
 
+        0x38: [jr_cond, ["C"]],
 
         0x3A: [load_dec_R_R2m, [cpu.registers.a, cpu.registers.hl]],
 
@@ -168,6 +169,24 @@ def run_opcode(opcode: int):
         0x7D: [load_R1_R2, [cpu.registers.a, cpu.registers.l]],
         0x7E: [load_R1_R2m, [cpu.registers.a, cpu.registers.hl]],
         0x7F: [load_R1_R2, [cpu.registers.a, cpu.registers.a]],
+
+        # ...
+
+        0xC2: [jp_cond, ["NZ"]],
+        0xC3: [jp_nn],
+
+        # ...
+
+        0xCA: [jp_cond, ["Z"]],
+        
+        # ...
+
+        0xD2: [jr_cond, ["NC"]],
+        0xDA: [jp_cond, ["C"]],
+
+        # ...
+
+        0xE9: [jp_hl]
     }
     args = []
     try:
