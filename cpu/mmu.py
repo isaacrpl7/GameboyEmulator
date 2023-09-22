@@ -1,4 +1,6 @@
 from cartridge import rom
+from cpu import cpu
+from cpu.io import read_io, write_io
 """
     Start	End	    Description	                    Notes
     0000	3FFF	16 KiB ROM bank 00	            From cartridge, usually a fixed bank
@@ -48,5 +50,17 @@ def read_address(address):
     if address_range(address) == 'ROM_BANK_00':
         return rom.memory_array[address]
 
+    if address_range(address) == 'IO_REGISTERS':
+        read_io(address)
+    
+    if address_range(address) == 'IE':
+        return cpu.interrupt_enabled.get_value()
+
 def write_address(address, byte):
     print(f'Writing in address: {address}, byte: {byte}')
+
+    if address_range(address) == 'IO_REGISTERS':
+        write_io(address, byte)
+    
+    if address_range(address) == 'IE':
+        cpu.interrupt_enabled.set_value(byte)

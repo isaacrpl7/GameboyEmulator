@@ -16,6 +16,11 @@ if __name__ == "__main__":
     cpu_gui = QTCPUDisplay()
 
 def step():
+    cpu.handle_interrupts()
+
+    if cpu.halted:
+        return 1
+
     # Decode instruction from ROM
     decoder = Decoder(rom.memory_array)
     next_addr, inst = decoder.decode_from(cpu.registers.pc.get_value())

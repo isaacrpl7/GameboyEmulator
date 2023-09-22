@@ -122,21 +122,12 @@ def load_SP_HL():
 def push_R16(register: RegisterPair):
     """ push r16
         Push r16 value to stack """
-    cpu.registers.sp.decrement()
-    write_address(cpu.registers.sp.get_value(),register.get_msb())
-    cpu.registers.sp.decrement()
-    write_address(cpu.registers.sp.get_value(),register.get_lsb())
+    cpu.stack_push(register)
 
 def pop_R16(register: RegisterPair):
     """ pop r16
         Pop the value from top of stack and store in r16 """
-    low_signf = read_address(cpu.registers.sp.get_value())
-    cpu.registers.sp.increment()
-    high_signif = read_address(cpu.registers.sp.get_value())
-    cpu.registers.sp.increment()
-
-    value = compose_bytes(high_signif, low_signf)
-    register.set_value(value)
+    cpu.stack_pop(register)
 
 
 # 8-BIT ARITHMETIC

@@ -1,12 +1,26 @@
 from cpu.registers import CPURegisters
+from cpu.registers import Register, RegisterPair
 from cpu.mmu import *
-from cpu.utils import compose_bytes
+from cpu.utils import compose_bytes, get_bit, set_bit
 
 class CPU:
     
     def __init__(self):
         self.registers = CPURegisters()
         self.change_cycle = False
+
+        # Interrupts
+        self.interrupts = {
+            'vblank': 0x40,
+            'lcdc_status': 0x48,
+            'timer': 0x50,
+            'serial': 0x58,
+            'joypad': 0x60
+        }
+        self.interrupt_flag = Register(0x0)
+        self.interrupt_enabled = Register(0x0)
+        self.interrupt_master_enabled = False
+        self.halted = False
     
     def read_byte_from_pc(self):
         content = read_address(self.registers.pc.get_value())
@@ -41,6 +55,53 @@ class CPU:
         if condition_valuation:
             self.set_change_cycle(True)
         return condition_valuation
+    
+    def stack_push(self, register: RegisterPair):
+        self.registers.sp.decrement()
+        write_address(self.registers.sp.get_value(),register.get_msb())
+        self.registers.sp.decrement()
+        write_address(self.registers.sp.get_value(),register.get_lsb())
+    
+    def stack_pop(self, register: RegisterPair):
+        low_signf = read_address(self.registers.sp.get_value())
+        self.registers.sp.increment()
+        high_signif = read_address(self.registers.sp.get_value())
+        self.registers.sp.increment()
+
+        value = compose_bytes(high_signif, low_signf)
+        register.set_value(value)
+
+    def handle_interrupts(self):
+        """ Functions like a call instruction. Push PC to stack, see the allowed interruptions in priority order, change PC to the respective interrupt address, 
+        and then set low the bit of the interruption flag """
+        if self.interrupt_master_enabled:
+            allowed_interrupts = self.interrupt_flag & self.interrupt_enabled
+
+            if allowed_interrupts == 0x0: # If there's no interrupt, just return
+                return
+            
+            self.halted = False
+            self.stack_push(self.registers.pc)
+
+            if self.handle_interrupt('vblank', allowed_interrupts, 0):
+                return
+            if self.handle_interrupt('lcdc_status', allowed_interrupts, 1):
+                return
+            if self.handle_interrupt('timer', allowed_interrupts, 2):
+                return
+            if self.handle_interrupt('serial', allowed_interrupts, 3):
+                return
+            if self.handle_interrupt('joypad', allowed_interrupts, 4):
+                return
+            
+    def handle_interrupt(self, type, allowed_interrupts, bit_position):
+        if not get_bit(allowed_interrupts, bit_position):
+            return False
+        
+        self.interrupt_flag = set_bit(self.interrupt_flag, bit_position, 0)
+        self.registers.pc.set_value(self.interrupts.get(type))
+        self.interrupt_master_enabled = False
+        return True
 
     # Debug purposes
     def return_registers(self):
