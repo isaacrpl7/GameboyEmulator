@@ -172,27 +172,64 @@ def run_opcode(opcode: int):
 
         # ...
 
+        0xC0: [ret_cond, ["NZ"]],
+
         0xC2: [jp_cond, ["NZ"]],
         0xC3: [jp_nn],
+        0xC4: [call_cond, ["NZ"]],
 
-        # ...
 
+        0xC7: [rst, [0x0]],
+        0xC8: [ret_cond, ["Z"]],
+        0xC9: [ret],
         0xCA: [jp_cond, ["Z"]],
         
-        # ...
+        0xCC: [call_cond, ["Z"]],
+        0xCD: [call_nn],
+
+        0xCF: [rst, [0x08]],
+        0xD0: [ret_cond, ["NC"]],
 
         0xD2: [jr_cond, ["NC"]],
+
+        0xD4: [call_cond, ["NC"]],
+
+
+        0xD7: [rst, [0x10]],
+        0xD8: [ret_cond, ["C"]],
+
         0xDA: [jp_cond, ["C"]],
+
+        0xDC: [call_cond, ["C"]],
+
+
+        0xDF: [rst, [0x18]],
 
         # ...
 
-        0xE9: [jp_hl]
+        0xE7: [rst, [0x20]],
+
+        0xE9: [jp_hl],
+
+
+
+
+
+        0xEF: [rst, [0x28]],
+
+        # ...
+
+        0xF7: [rst, [0x30]],
+
+        # ...
+        
+        0xFF: [rst, [0x38]]
     }
     args = []
     try:
         if len(mapping[opcode]) == 2:
             args = mapping[opcode][1]
         mapping[opcode][0](*args)
-        return opcode_cycles[opcode] if not cpu.reset_change_cycle else opcode_cycles_changed[opcode]
+        return opcode_cycles[opcode] if not cpu.reset_change_cycle() else opcode_cycles_changed[opcode]
     except:
         return 0

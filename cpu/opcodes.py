@@ -492,3 +492,30 @@ def jr_cond(condition: str):
         jr_nn()
     else:
         cpu.read_byte_from_pc()
+    
+# CALL INSTRUCTIONS
+
+def call_nn():
+    address = cpu.read_word_from_pc()
+    push_R16(cpu.registers.pc)
+    cpu.registers.pc.set_value(address)
+
+def call_cond(condition: str):
+    if cpu.check_condition(condition):
+        call_nn()
+    else:
+        cpu.read_word_from_pc()
+
+# RETURN INSTRUCTIONS
+
+def ret():
+    pop_R16(cpu.registers.pc)
+
+def ret_cond(condition: str):
+    if cpu.check_condition(condition):
+        ret()
+    
+# RST
+def rst(address: int):
+    push_R16(cpu.registers.pc)
+    cpu.registers.pc.set_value(address)
