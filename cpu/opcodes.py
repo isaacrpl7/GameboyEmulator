@@ -506,7 +506,19 @@ def ret_cond(condition: str):
     if cpu.check_condition(condition):
         ret()
     
+def reti():
+    ret()
+    enable_interrupts()
+    
 # RST
 def rst(address: int):
     push_R16(cpu.registers.pc)
     cpu.registers.pc.set_value(address)
+
+# CONTROL INSTRUCTIONS
+
+def disable_interrupts():
+    cpu.interrupt_master_enabled = False
+
+def enable_interrupts():
+    cpu.interrupt_master_enabled = True

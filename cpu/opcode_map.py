@@ -197,7 +197,7 @@ def run_opcode(opcode: int):
 
         0xD7: [rst, [0x10]],
         0xD8: [ret_cond, ["C"]],
-
+        0xD9: [reti],
         0xDA: [jp_cond, ["C"]],
 
         0xDC: [call_cond, ["C"]],
@@ -216,13 +216,19 @@ def run_opcode(opcode: int):
 
 
         0xEF: [rst, [0x28]],
+        
 
+        0xF3: [disable_interrupts],
         # ...
 
         0xF7: [rst, [0x30]],
 
         # ...
-        
+        0xFB: [enable_interrupts],
+
+
+
+
         0xFF: [rst, [0x38]]
     }
     args = []
