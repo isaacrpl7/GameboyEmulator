@@ -117,6 +117,9 @@ class Decoder:
             if operand.get('value') is not None:
                 operands_string += hex(operand['value']) + ' '
             else:
-                operands_string += operand['name'] + ' '
+                if operand.get('immediate') == True:
+                    operands_string += operand['name'] + ' '
+                else:
+                    operands_string +=  '(' + operand['name'] + ')' + ' '
 
         return instruction['mnemonic'] + operands_string

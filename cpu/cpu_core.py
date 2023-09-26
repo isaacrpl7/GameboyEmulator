@@ -1,6 +1,8 @@
 from cpu.registers import CPURegisters
 from cpu.registers import Register, RegisterPair
-from cpu.mmu import *
+from cpu.serial import Serial
+from cpu.mmu import MMU
+from cpu.io import IO
 from cpu.utils import compose_bytes, get_bit, set_bit
 
 class CPU:
@@ -21,9 +23,15 @@ class CPU:
         self.interrupt_enabled = Register(0x0)
         self.interrupt_master_enabled = False
         self.halted = False
+
+        # Serial port
+        self.serial = Serial()
+
+        self.mmu = MMU(cpu=self)
+        self.io = IO(cpu=self)
     
     def read_byte_from_pc(self):
-        content = read_address(self.registers.pc.get_value())
+        content = self.mmu.read_address(self.registers.pc.get_value())
         self.registers.pc.increment()
         return content
     
@@ -58,14 +66,14 @@ class CPU:
     
     def stack_push(self, register: RegisterPair):
         self.registers.sp.decrement()
-        write_address(self.registers.sp.get_value(),register.get_msb())
+        self.mmu.write_address(self.registers.sp.get_value(),register.get_msb())
         self.registers.sp.decrement()
-        write_address(self.registers.sp.get_value(),register.get_lsb())
+        self.mmu.write_address(self.registers.sp.get_value(),register.get_lsb())
     
     def stack_pop(self, register: RegisterPair):
-        low_signf = read_address(self.registers.sp.get_value())
+        low_signf = self.mmu.read_address(self.registers.sp.get_value())
         self.registers.sp.increment()
-        high_signif = read_address(self.registers.sp.get_value())
+        high_signif = self.mmu.read_address(self.registers.sp.get_value())
         self.registers.sp.increment()
 
         value = compose_bytes(high_signif, low_signf)

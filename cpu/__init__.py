@@ -1,3 +1,3 @@
-from cpu.cpu import CPU
+from cpu.cpu_core import CPU
 
 cpu = CPU()

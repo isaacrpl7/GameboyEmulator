@@ -1,5 +1,4 @@
 from cpu import cpu
-from cpu.mmu import *
 from cpu.registers import Register, RegisterPair, FlagRegister
 from cpu.utils import *
 """ 
@@ -27,54 +26,54 @@ def load_R1_R2m(register1: Register, register2: RegisterPair):
     """ LD r, (r'16) 
         Load to register1 the value in the memory location of register2 (16-bits)
     """
-    register1.set_value(read_address(register2.get_value()))
+    register1.set_value(cpu.mmu.read_address(register2.get_value()))
 
 def load_R1m_R2(register1: RegisterPair, register2: Register):
     """ LD (r16), r'
         Load the content of a register into the memory at address denoted by the register pair R1 """
-    write_address(register1.get_value(), register2.get_value())
+    cpu.mmu.write_address(register1.get_value(), register2.get_value())
 
 def load_R_n16m(register: Register):
     """ LD r, (n16)
         Load to register1 the value in the memory location of the 2 byte operands that PC will get """
     address = cpu.read_word_from_pc()
-    register.set_value(read_address(address))
+    register.set_value(cpu.mmu.read_address(address))
 
 def load_n16m_R(register: Register):
     """ LD (n16), r
         Load the content of a register into the memory at address denoted by u16 (fetched by PC) """
     address = cpu.read_word_from_pc()
-    write_address(address, register.get_value())
+    cpu.mmu.write_address(address, register.get_value())
 
 def load_Rm_n8(register: RegisterPair):
     """ LD (r16), n8
         Load 8-bit value fetched by PC to the memory location pointed by register R """
     content = cpu.read_byte_from_pc()
-    write_address(register.get_value(), content)
+    cpu.mmu.write_address(register.get_value(), content)
 
 def load_A_io():
     """ ld A, (FF00+n)
         Load from I/O registers in memory to a chosen register """
     offset = cpu.read_byte_from_pc()
-    cpu.registers.a.set_value(read_address(0xFF00 + offset))
+    cpu.registers.a.set_value(cpu.mmu.read_address(0xFF00 + offset))
 
 def load_io_A():
     """ ld (FF00+n), A
         Load from A register to I/O memory """
     offset = cpu.read_byte_from_pc()
-    write_address(0xFF00 + offset, cpu.registers.a.get_value())
+    cpu.mmu.write_address(0xFF00 + offset, cpu.registers.a.get_value())
 
 def load_A_ioC():
     """ ld A, (FF00+C)
         Load from I/O address in C to register A """
     offset = cpu.registers.c.get_value()
-    cpu.registers.a.set_value(read_address(0xFF00 + offset))
+    cpu.registers.a.set_value(cpu.mmu.read_address(0xFF00 + offset))
 
 def load_ioC_A():
     """ ld (FF00+C), A
         Load from A register into I/O address C """
     offset = cpu.registers.c.get_value()
-    write_address(0xFF00 + offset, cpu.registers.a.get_value())
+    cpu.mmu.write_address(0xFF00 + offset, cpu.registers.a.get_value())
 
 def load_inc_mR_R2(register1: RegisterPair, register2: Register):
     """ ldi (r16), r'
@@ -112,7 +111,7 @@ def load_n16m_SP():
     """ ld (nn),SP
         Load from Stack Pointer to the memory address pointed by 2 bytes fetched from PC """
     address = cpu.read_word_from_pc()
-    write_address(address, cpu.registers.sp.get_value())
+    cpu.mmu.write_address(address, cpu.registers.sp.get_value())
 
 def load_SP_HL():
     """ ld SP,HL
@@ -154,7 +153,7 @@ def add_A_n8():
 
 def add_A_HLm():
     """ A = A + (HL) """
-    content = read_address(cpu.registers.hl.get_value())
+    content = cpu.mmu.read_address(cpu.registers.hl.get_value())
     value = content + cpu.registers.a.get_value()
 
     cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
@@ -189,7 +188,7 @@ def adc_A_n8():
 
 def adc_A_HLm():
     """ Adding with carry """
-    content = read_address(cpu.registers.hl.get_value())
+    content = cpu.mmu.read_address(cpu.registers.hl.get_value())
     value = content + cpu.registers.a.get_value() + cpu.registers.f.get_flag_carry()
 
     cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
@@ -225,7 +224,7 @@ def sub_n8():
 
 def sub_HLm():
     """ A = A - (HL) """
-    content = read_address(cpu.registers.hl.get_value())
+    content = cpu.mmu.read_address(cpu.registers.hl.get_value())
     value = cpu.registers.a.get_value() - content
 
     cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
@@ -261,7 +260,7 @@ def sbc_n8():
 
 def sbc_HLm():
     """ A = A - (HL) - carry"""
-    content = read_address(cpu.registers.hl.get_value())
+    content = cpu.mmu.read_address(cpu.registers.hl.get_value())
     value = cpu.registers.a.get_value() - content - cpu.registers.f.get_flag_carry()
 
     cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
@@ -292,7 +291,7 @@ def and_A_n8():
     cpu.registers.f.set_flag_carry(False)
 
 def and_A_HLm():
-    content = read_address(cpu.registers.hl.get_value())
+    content = cpu.mmu.read_address(cpu.registers.hl.get_value())
     value = cpu.registers.a.get_value() & content
     cpu.registers.a.set_value(value)
 
@@ -322,7 +321,7 @@ def xor_A_n8():
     cpu.registers.f.set_flag_carry(False)
 
 def xor_A_HLm():
-    content = read_address(cpu.registers.hl.get_value())
+    content = cpu.mmu.read_address(cpu.registers.hl.get_value())
     value = cpu.registers.a.get_value() ^ content
     cpu.registers.a.set_value(value)
 
@@ -352,7 +351,7 @@ def or_A_n8():
     cpu.registers.f.set_flag_carry(False)
 
 def or_A_HLm():
-    content = read_address(cpu.registers.hl.get_value())
+    content = cpu.mmu.read_address(cpu.registers.hl.get_value())
     value = cpu.registers.a.get_value() | content
     cpu.registers.a.set_value(value)
 
@@ -383,7 +382,7 @@ def cp_A_n8():
 
 def cp_A_HLm():
     """ Compare A and (HL) (subtract without storing)"""
-    content = read_address(cpu.registers.hl.get_value())
+    content = cpu.mmu.read_address(cpu.registers.hl.get_value())
     value = cpu.registers.a.get_value() - content
 
     cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
@@ -402,14 +401,14 @@ def inc_R(register:Register):
     register.set_value((value & 0xFF))
 
 def inc_HLm():
-    content = read_address(cpu.registers.hl.get_value())
+    content = cpu.mmu.read_address(cpu.registers.hl.get_value())
     value = content + 1
 
     cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
     cpu.registers.f.set_flag_subtract(False)
     cpu.registers.f.set_flag_half_carry((content & 0xF) + 1 > 0xF)
 
-    write_address(cpu.registers.hl.get_value(), value & 0xFF)
+    cpu.mmu.write_address(cpu.registers.hl.get_value(), value & 0xFF)
 
 def dec_R(register: Register):
     content = register.get_value()
@@ -422,14 +421,14 @@ def dec_R(register: Register):
     register.set_value(value & 0xFF)
 
 def dec_HLm():
-    content = read_address(cpu.registers.hl.get_value())
+    content = cpu.mmu.read_address(cpu.registers.hl.get_value())
     value = content - 1
 
     cpu.registers.f.set_flag_zero((value & 0xFF) == 0)
     cpu.registers.f.set_flag_subtract(True)
     cpu.registers.f.set_flag_half_carry((content & 0xF) - 1 < 0)
 
-    write_address(cpu.registers.hl.get_value(), value & 0xFF)
+    cpu.mmu.write_address(cpu.registers.hl.get_value(), value & 0xFF)
 
 def daa():
     """ Transform A register into BCD representation using carry if necessary """

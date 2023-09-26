@@ -1,6 +1,4 @@
 from cartridge import rom
-from cpu import cpu
-from cpu.io import read_io, write_io
 """
     Start	End	    Description	                    Notes
     0000	3FFF	16 KiB ROM bank 00	            From cartridge, usually a fixed bank
@@ -30,37 +28,41 @@ ranges = {
     'HRAM': [0xFF80, 0xFFFE],
     'IE': [0xFFFF, 0xFFFF],
 }
+class MMU:
+    def __init__(self, cpu):
+        self.cpu = cpu
 
-# return the range the address is in
-def address_range(address):
-    if address < 0 or address > 0xFFFF:
-        raise ValueError('Address is out of range')
-    for range in ranges.keys():
-        if address >= ranges[range][0] and address <= ranges[range][1]:
-            return range
-    
-def read_address(address):
+    # return the range the address is in
+    def address_range(self, address):
+        if address < 0 or address > 0xFFFF:
+            raise ValueError('Address is out of range')
+        for range in ranges.keys():
+            if address >= ranges[range][0] and address <= ranges[range][1]:
+                return range
+        
+    def read_address(self, address):
+        print(f'Reading address: {hex(address)}')
 
-    if address_range(address) == 'PROHIBITED1':
-        raise ValueError('You cannot access this area of memory')
-    
-    if address_range(address) == 'PROHIBITED2':
-        raise ValueError('You cannot access this area of memory')
-    
-    if address_range(address) == 'ROM_BANK_00':
-        return rom.memory_array[address]
+        if self.address_range(address) == 'PROHIBITED1':
+            raise ValueError('You cannot access this area of memory')
+        
+        if self.address_range(address) == 'PROHIBITED2':
+            raise ValueError('You cannot access this area of memory')
+        
+        if self.address_range(address) == 'ROM_BANK_00':
+            return rom.memory_array[address]
 
-    if address_range(address) == 'IO_REGISTERS':
-        read_io(address)
-    
-    if address_range(address) == 'IE':
-        return cpu.interrupt_enabled.get_value()
+        if self.address_range(address) == 'IO_REGISTERS':
+            self.cpu.io.read_io(address)
+        
+        if self.address_range(address) == 'IE':
+            return self.cpu.interrupt_enabled.get_value()
 
-def write_address(address, byte):
-    print(f'Writing in address: {address}, byte: {byte}')
+    def write_address(self, address, byte):
+        print(f'Writing in address: {hex(address)}, byte: {byte}')
 
-    if address_range(address) == 'IO_REGISTERS':
-        write_io(address, byte)
-    
-    if address_range(address) == 'IE':
-        cpu.interrupt_enabled.set_value(byte)
+        if self.address_range(address) == 'IO_REGISTERS':
+            self.cpu.io.write_io(address, byte)
+        
+        if self.address_range(address) == 'IE':
+            self.cpu.interrupt_enabled.set_value(byte)
