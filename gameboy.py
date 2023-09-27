@@ -1,5 +1,5 @@
 from cpu import cpu
-from cartridge import rom
+from cartridge import rom, cartridge_controller
 from cpu.opcodes import *
 from cartridge.rom import Decoder
 from cpu.opcode_map import run_opcode
@@ -10,6 +10,7 @@ from gui.cpu_display import QTCPUDisplay
 from PyQt5 import QtWidgets
 
 rom.load_file('test_roms/07-jr,jp,call,ret,rst.gb')
+cartridge_controller.load_cartridge_type_from_rom(rom)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
@@ -22,7 +23,7 @@ def step():
         return 1
 
     # Decode instruction from ROM
-    decoder = Decoder(rom.memory_array)
+    decoder = Decoder(cartridge_controller.cartridge.rom.memory_array)
     next_addr, inst = decoder.decode_from(cpu.registers.pc.get_value())
     addr = cpu.registers.pc.get_value()
     #print(f'{hex(cpu.registers.pc.get_value())} {decoder.print_instruction(inst)}')

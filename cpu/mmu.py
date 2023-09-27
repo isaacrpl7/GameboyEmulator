@@ -1,4 +1,5 @@
-from cartridge import rom
+from cartridge import cartridge_controller
+from cpu.utils import address_in_range
 """
     Start	End	    Description	                    Notes
     0000	3FFF	16 KiB ROM bank 00	            From cartridge, usually a fixed bank
@@ -34,10 +35,10 @@ class MMU:
 
     # return the range the address is in
     def address_range(self, address):
-        if address < 0 or address > 0xFFFF:
+        if not address_in_range(address, 0, 0xFFFF):
             raise ValueError('Address is out of range')
         for range in ranges.keys():
-            if address >= ranges[range][0] and address <= ranges[range][1]:
+            if address_in_range(address, ranges[range][0], ranges[range][1]):
                 return range
         
     def read_address(self, address):
@@ -49,8 +50,11 @@ class MMU:
         if self.address_range(address) == 'PROHIBITED2':
             raise ValueError('You cannot access this area of memory')
         
-        if self.address_range(address) == 'ROM_BANK_00':
-            return rom.memory_array[address]
+        if self.address_range(address) == 'ROM_BANK_00' or self.address_range(address) == 'ROM_BANK_NN':
+            return cartridge_controller.cartridge.read(address)
+        
+        if self.address_range(address) == 'EXT_RAM':
+            return cartridge_controller.cartridge.read(address)
 
         if self.address_range(address) == 'IO_REGISTERS':
             self.cpu.io.read_io(address)
@@ -60,6 +64,12 @@ class MMU:
 
     def write_address(self, address, byte):
         print(f'Writing in address: {hex(address)}, byte: {byte}')
+
+        if self.address_range(address) == 'ROM_BANK_00' or self.address_range(address) == 'ROM_BANK_NN':
+            cartridge_controller.cartridge.write(address, byte)
+        
+        if self.address_range(address) == 'EXT_RAM':
+            cartridge_controller.cartridge.read(address, byte)
 
         if self.address_range(address) == 'IO_REGISTERS':
             self.cpu.io.write_io(address, byte)

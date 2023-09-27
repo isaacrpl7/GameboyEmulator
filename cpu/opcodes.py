@@ -473,8 +473,10 @@ def jp_cond(condition: str):
         cpu.read_word_from_pc()
 
 def jr_nn():
-    pc_value = cpu.registers.pc.get_value()
     offset = cpu.read_byte_from_pc()
+    offset = offset - 256 if offset >= 128 else offset # Unsigned to signed
+
+    pc_value = cpu.registers.pc.get_value()
     cpu.registers.pc.set_value(pc_value + offset)
 
 def jr_cond(condition: str):

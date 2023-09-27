@@ -14,3 +14,9 @@ def set_bit(byte, bit_position, value):
 def get_bit(byte, bit_position):
     """ Return a bit of a byte at bit_position """
     return (byte & (0x01 << bit_position)) >> bit_position
+
+def address_in_range(address, lower, upper):
+    if address >= lower and address <= upper:
+        return True
+    else:
+        return False
