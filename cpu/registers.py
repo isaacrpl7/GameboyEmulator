@@ -13,7 +13,7 @@ class Register:
         if value < 2**self.size:
             self.value = value
         else:
-            raise ValueError('Registor value exceeds capacity!')
+            raise ValueError(f'Register value of {hex(value)} exceeds capacity of {hex(2**self.size)}!')
     
     def get_msb(self):
         if self.size == 16:
@@ -84,7 +84,7 @@ class RegisterPair:
             self.msr.set_value(value >> 8)
             self.lsr.set_value(value & 0xFF)
         else:
-            raise ValueError('Registor value exceeds capacity!')
+            raise ValueError(f'RegisterPair value {hex(value)} exceeds capacity!')
     
     def get_msb(self):
         return self.msr.get_value()

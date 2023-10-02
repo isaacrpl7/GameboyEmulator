@@ -13,6 +13,15 @@ class IO:
         # Read interrupt flag
         if address == 0xFF0F:
             return self.cpu.interrupt_flag.get_value()
+        
+        # LCD Y coordinate
+        if address == 0xFF44:
+            print('Accessed LCD Y coordinate, but it is not implemented yet')
+            return 0x90
+        
+        print(f'Address {hex(address)} not implemented')
+        print(f'PC value is: {hex(self.cpu.registers.pc.get_value())}')
+        return 0xFF
 
     def write_io(self, address, byte):
         if address == 0xFF01:

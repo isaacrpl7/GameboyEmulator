@@ -313,4 +313,5 @@ def run_opcode(opcode: int):
             exit(1)
         print(f'({hex(opcode)}) opcode error!')
         print(f'Exception type: {type(err).__name__}, message: {str(err)}')
+        print(f'bc: {hex(cpu.registers.bc.get_value())}')
         return 0
