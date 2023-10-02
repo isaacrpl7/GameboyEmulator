@@ -169,16 +169,77 @@ def run_opcode(opcode: int):
         0x7D: [load_R1_R2, [cpu.registers.a, cpu.registers.l]],
         0x7E: [load_R1_R2m, [cpu.registers.a, cpu.registers.hl]],
         0x7F: [load_R1_R2, [cpu.registers.a, cpu.registers.a]],
-
-        # ...
-
+        0x80: [add_A_R, [cpu.registers.b]],
+        0x81: [add_A_R, [cpu.registers.c]],
+        0x82: [add_A_R, [cpu.registers.d]],
+        0x83: [add_A_R, [cpu.registers.e]],
+        0x84: [add_A_R, [cpu.registers.h]],
+        0x85: [add_A_R, [cpu.registers.l]],
+        0x86: [add_A_HLm],
+        0x87: [add_A_R, [cpu.registers.a]],
+        0x88: [adc_A_R, [cpu.registers.b]],
+        0x89: [adc_A_R, [cpu.registers.c]],
+        0x8A: [adc_A_R, [cpu.registers.d]],
+        0x8B: [adc_A_R, [cpu.registers.e]],
+        0x8C: [adc_A_R, [cpu.registers.h]],
+        0x8D: [adc_A_R, [cpu.registers.l]],
+        0x8E: [adc_A_HLm],
+        0x8F: [adc_A_R, [cpu.registers.a]],
+        0x90: [sub_A_R, [cpu.registers.b]],
+        0x91: [sub_A_R, [cpu.registers.c]],
+        0x92: [sub_A_R, [cpu.registers.d]],
+        0x93: [sub_A_R, [cpu.registers.e]],
+        0x94: [sub_A_R, [cpu.registers.h]],
+        0x95: [sub_A_R, [cpu.registers.l]],
+        0x96: [sub_A_HLm],
+        0x97: [sub_A_R, [cpu.registers.a]],
+        0x98: [sbc_A_R, [cpu.registers.b]],
+        0x99: [sbc_A_R, [cpu.registers.c]],
+        0x9A: [sbc_A_R, [cpu.registers.d]],
+        0x9B: [sbc_A_R, [cpu.registers.e]],
+        0x9C: [sbc_A_R, [cpu.registers.h]],
+        0x9D: [sbc_A_R, [cpu.registers.l]],
+        0x9E: [sbc_A_HLm],
+        0x9F: [sbc_A_R, [cpu.registers.a]],
+        0xA0: [and_A_R, [cpu.registers.b]],
+        0xA1: [and_A_R, [cpu.registers.c]],
+        0xA2: [and_A_R, [cpu.registers.d]],
+        0xA3: [and_A_R, [cpu.registers.e]],
+        0xA4: [and_A_R, [cpu.registers.h]],
+        0xA5: [and_A_R, [cpu.registers.l]],
+        0xA6: [and_A_HLm],
+        0xA7: [and_A_R, [cpu.registers.a]],
+        0xA8: [xor_A_R, [cpu.registers.b]],
+        0xA9: [xor_A_R, [cpu.registers.c]],
+        0xAA: [xor_A_R, [cpu.registers.d]],
+        0xAB: [xor_A_R, [cpu.registers.e]],
+        0xAC: [xor_A_R, [cpu.registers.h]],
+        0xAD: [xor_A_R, [cpu.registers.l]],
+        0xAE: [xor_A_HLm],
+        0xAF: [xor_A_R, [cpu.registers.a]],
+        0xB0: [or_A_R, [cpu.registers.b]],
+        0xB1: [or_A_R, [cpu.registers.c]],
+        0xB2: [or_A_R, [cpu.registers.d]],
+        0xB3: [or_A_R, [cpu.registers.e]],
+        0xB4: [or_A_R, [cpu.registers.h]],
+        0xB5: [or_A_R, [cpu.registers.l]],
+        0xB6: [or_A_HLm],
+        0xB7: [or_A_R, [cpu.registers.a]],
+        0xB8: [cp_A_R, [cpu.registers.b]],
+        0xB9: [cp_A_R, [cpu.registers.c]],
+        0xBA: [cp_A_R, [cpu.registers.d]],
+        0xBB: [cp_A_R, [cpu.registers.e]],
+        0xBC: [cp_A_R, [cpu.registers.h]],
+        0xBD: [cp_A_R, [cpu.registers.l]],
+        0xBE: [cp_A_HLm],
+        0xBF: [cp_A_R, [cpu.registers.a]],
         0xC0: [ret_cond, ["NZ"]],
         0xC1: [pop_R16, [cpu.registers.bc]],
         0xC2: [jp_cond, ["NZ"]],
         0xC3: [jp_nn],
         0xC4: [call_cond, ["NZ"]],
         0xC5: [push_R16, [cpu.registers.bc]],
-
+        0xC6: [add_A_n8],
         0xC7: [rst, [0x0]],
         0xC8: [ret_cond, ["Z"]],
         0xC9: [ret],
@@ -186,7 +247,7 @@ def run_opcode(opcode: int):
         
         0xCC: [call_cond, ["Z"]],
         0xCD: [call_nn],
-
+        0xCE: [adc_A_n8],
         0xCF: [rst, [0x08]],
         0xD0: [ret_cond, ["NC"]],
         0xD1: [pop_R16, [cpu.registers.de]],
@@ -194,7 +255,7 @@ def run_opcode(opcode: int):
 
         0xD4: [call_cond, ["NC"]],
         0xD5: [push_R16, [cpu.registers.de]],
-
+        0xD6: [sub_A_n8],
         0xD7: [rst, [0x10]],
         0xD8: [ret_cond, ["C"]],
         0xD9: [reti],
@@ -202,7 +263,7 @@ def run_opcode(opcode: int):
 
         0xDC: [call_cond, ["C"]],
 
-
+        0xDE: [sbc_A_n8],
         0xDF: [rst, [0x18]],
         0xE0: [load_io_A],
         0xE1: [pop_R16, [cpu.registers.hl]],
@@ -211,7 +272,7 @@ def run_opcode(opcode: int):
 
 
         0xE5: [push_R16, [cpu.registers.hl]],
-
+        0xE6: [and_A_n8],
         0xE7: [rst, [0x20]],
 
         0xE9: [jp_hl],
@@ -219,7 +280,7 @@ def run_opcode(opcode: int):
 
 
 
-
+        0xEE: [xor_A_n8],
         0xEF: [rst, [0x28]],
         0xF0: [load_A_io],
         0xF1: [pop_R16, [cpu.registers.af]],
@@ -227,7 +288,7 @@ def run_opcode(opcode: int):
         0xF3: [disable_interrupts],
         
         0xF5: [push_R16, [cpu.registers.af]],
-
+        0xF6: [or_A_n8],
         0xF7: [rst, [0x30]],
 
         
@@ -236,7 +297,7 @@ def run_opcode(opcode: int):
 
 
 
-
+        0xFE: [cp_A_n8],
         0xFF: [rst, [0x38]]
     }
     args = []

@@ -198,7 +198,7 @@ def adc_A_HLm():
 
     cpu.registers.a.set_value(value & 0xFF)
 
-def sub_R(register: Register):
+def sub_A_R(register: Register):
     """ A = A - R """
     content = register.get_value()
     value = cpu.registers.a.get_value() - content
@@ -210,7 +210,7 @@ def sub_R(register: Register):
 
     cpu.registers.a.set_value(value & 0xFF)
 
-def sub_n8():
+def sub_A_n8():
     """ A = A - n8 """
     content = cpu.read_byte_from_pc()
     value = cpu.registers.a.get_value() - content
@@ -222,7 +222,7 @@ def sub_n8():
 
     cpu.registers.a.set_value(value & 0xFF)
 
-def sub_HLm():
+def sub_A_HLm():
     """ A = A - (HL) """
     content = cpu.mmu.read_address(cpu.registers.hl.get_value())
     value = cpu.registers.a.get_value() - content
@@ -234,7 +234,7 @@ def sub_HLm():
 
     cpu.registers.a.set_value(value & 0xFF)
 
-def sbc_R(register: Register):
+def sbc_A_R(register: Register):
     """ A = A - R - carry """
     content = register.get_value()
     value = cpu.registers.a.get_value() - content - cpu.registers.f.get_flag_carry()
@@ -246,7 +246,7 @@ def sbc_R(register: Register):
 
     cpu.registers.a.set_value(value & 0xFF)
 
-def sbc_n8():
+def sbc_A_n8():
     """ A = A - n8 - carry """
     content = cpu.read_byte_from_pc()
     value = cpu.registers.a.get_value() - content - cpu.registers.f.get_flag_carry()
@@ -258,7 +258,7 @@ def sbc_n8():
 
     cpu.registers.a.set_value(value & 0xFF)
 
-def sbc_HLm():
+def sbc_A_HLm():
     """ A = A - (HL) - carry"""
     content = cpu.mmu.read_address(cpu.registers.hl.get_value())
     value = cpu.registers.a.get_value() - content - cpu.registers.f.get_flag_carry()
