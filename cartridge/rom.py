@@ -73,23 +73,22 @@ class Decoder:
         for i in instructions_dict['cbprefixed'].values():
             self.regular_instructions.append(i)
 
-
-    def get_bytes(self, loc, size=1):
-        if len(self.bytearray_to_decode) >= loc + size >= 0:
-            return int.from_bytes(self.bytearray_to_decode[loc : loc+size], 'little')
-        else:
-            raise IndexError(f'{loc} + {size} is out of range')
+    def get_bytes(self, loc, cpu, size=1):
+        data = []
+        for i in range(loc, loc+size):
+            data.append(cpu.mmu.read_address(i))
+        return int.from_bytes(data, 'little')
     
-    def decode_from(self, addr=0):
+    def decode_from(self, addr=0, cpu=None):
         if addr != 0:
             self.address = addr
         
-        opcode = self.get_bytes(self.address)
+        opcode = self.get_bytes(self.address, cpu)
         self.address += 1
 
         instruction = None
         if opcode == 0xcb:
-            instruction = self.prefixed_instructions[self.get_bytes(self.address)]
+            instruction = self.prefixed_instructions[self.get_bytes(self.address, cpu)]
             self.address += 1
         else:
             instruction = self.regular_instructions[opcode]
@@ -97,7 +96,7 @@ class Decoder:
         operands_with_values = []
         for operand in instruction['operands']:
             if operand.get('bytes') is not None:
-                value = self.get_bytes(self.address, operand.get('bytes'))
+                value = self.get_bytes(self.address, cpu, operand.get('bytes'))
                 self.address += operand.get('bytes')
                 mod = dict(operand)
                 mod['value'] = value

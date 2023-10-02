@@ -1,5 +1,5 @@
 import sys
-from PyQt5 import QtWidgets, uic, QtWidgets
+from PyQt5 import QtWidgets, uic, QtWidgets, QtGui
 
 qtcreator_file  = "./gui/gui_qt.ui" # Enter file here.
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtcreator_file)
@@ -47,11 +47,26 @@ class QTCPUDisplay(QtWidgets.QMainWindow, Ui_MainWindow):
         self.label_carry.setText(f"Cx\nValue: {registers['CR']}")
         self.label_sp.setText(f"SP\nValue: {registers['SP']}")
         self.label_pc.setText(f"PC\nValue: {registers['PC']}")
+        self.update()
 
-    def insert_instruction(self, instruction: str, address: str, opcode: str):
+    def insert_instruction(self, instruction: str, address: str, opcode: str, isImplemented: bool):
         rowPosition = self.instructions_table.rowCount()
         self.instructions_table.insertRow(rowPosition)
-        self.instructions_table.setItem(rowPosition , 0, QtWidgets.QTableWidgetItem(instruction))
-        self.instructions_table.setItem(rowPosition , 1, QtWidgets.QTableWidgetItem(address))
-        self.instructions_table.setItem(rowPosition , 2, QtWidgets.QTableWidgetItem(opcode))
+
+        # Creating columns and setting their color
+        if not isImplemented:
+            brush = QtGui.QBrush(QtGui.QColor(207, 77, 68))
+        else:
+            brush = QtGui.QBrush(QtGui.QColor(84, 71, 70))
+        instruction_column = QtWidgets.QTableWidgetItem(instruction)
+        instruction_column.setForeground(brush)
+        address_column = QtWidgets.QTableWidgetItem(address)
+        address_column.setForeground(brush)
+        opcode_column = QtWidgets.QTableWidgetItem(opcode)
+        opcode_column.setForeground(brush)
+
+        self.instructions_table.setItem(rowPosition , 0, instruction_column)
+        self.instructions_table.setItem(rowPosition , 1, address_column)
+        self.instructions_table.setItem(rowPosition , 2, opcode_column)
         self.instructions_table.scrollToBottom()
+        self.update()

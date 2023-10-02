@@ -14,7 +14,19 @@ class Register:
             self.value = value
         else:
             raise ValueError('Registor value exceeds capacity!')
-        
+    
+    def get_msb(self):
+        if self.size == 16:
+            return (self.value & 0xFF00) >> 8
+        else:
+            raise ValueError('Trying to get msb of a non 16-bit register')
+    
+    def get_lsb(self):
+        if self.size == 16:
+            return self.value & 0x00FF
+        else:
+            raise ValueError('Trying to get lsb of a non 16-bit register')
+
     def getSize(self):
         return self.size
     

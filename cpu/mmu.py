@@ -32,6 +32,7 @@ ranges = {
 class MMU:
     def __init__(self, cpu):
         self.cpu = cpu
+        self.work_ram = bytearray(0x8000)
 
     # return the range the address is in
     def address_range(self, address):
@@ -42,7 +43,7 @@ class MMU:
                 return range
         
     def read_address(self, address):
-        print(f'Reading address: {hex(address)}')
+        # print(f'Reading address: {hex(address)}')
 
         if self.address_range(address) == 'PROHIBITED1':
             raise ValueError('You cannot access this area of memory')
@@ -57,13 +58,16 @@ class MMU:
             return cartridge_controller.cartridge.read(address)
 
         if self.address_range(address) == 'IO_REGISTERS':
-            self.cpu.io.read_io(address)
+            return self.cpu.io.read_io(address)
+        
+        if self.address_range(address) == 'WORK_RAM1' or self.address_range(address) == 'WORK_RAM2':
+            return self.work_ram[(address - 0xC000)]
         
         if self.address_range(address) == 'IE':
             return self.cpu.interrupt_enabled.get_value()
 
     def write_address(self, address, byte):
-        print(f'Writing in address: {hex(address)}, byte: {byte}')
+        # print(f'Writing in address: {hex(address)}, byte: {hex(byte)}')
 
         if self.address_range(address) == 'ROM_BANK_00' or self.address_range(address) == 'ROM_BANK_NN':
             cartridge_controller.cartridge.write(address, byte)
@@ -73,6 +77,9 @@ class MMU:
 
         if self.address_range(address) == 'IO_REGISTERS':
             self.cpu.io.write_io(address, byte)
+        
+        if self.address_range(address) == 'WORK_RAM1' or self.address_range(address) == 'WORK_RAM2':
+            self.work_ram[(address - 0xC000)] = byte
         
         if self.address_range(address) == 'IE':
             self.cpu.interrupt_enabled.set_value(byte)

@@ -29,6 +29,9 @@ class CPU:
 
         self.mmu = MMU(cpu=self)
         self.io = IO(cpu=self)
+
+        # Debug
+        self.isCurrentInstructionImplemented = True
     
     def read_byte_from_pc(self):
         content = self.mmu.read_address(self.registers.pc.get_value())
@@ -128,3 +131,10 @@ class CPU:
             'SP': hex(self.registers.sp.get_value()),
             'PC': hex(self.registers.pc.get_value())
         }
+    
+    def checkCurrentInstructionImplemented(self):
+        if self.isCurrentInstructionImplemented:
+            return True
+        else:
+            self.isCurrentInstructionImplemented = True
+            return False

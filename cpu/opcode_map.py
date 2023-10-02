@@ -204,26 +204,29 @@ def run_opcode(opcode: int):
 
 
         0xDF: [rst, [0x18]],
-
-        # ...
+        0xE0: [load_io_A],
+        
+        0xE2: [load_ioC_A],
 
         0xE7: [rst, [0x20]],
 
         0xE9: [jp_hl],
-
+        0xEA: [load_n16m_R, [cpu.registers.a]],
 
 
 
 
         0xEF: [rst, [0x28]],
-        
+        0xF0: [load_A_io],
 
+        0xF2: [load_A_ioC],
         0xF3: [disable_interrupts],
         # ...
 
         0xF7: [rst, [0x30]],
 
         # ...
+        0xFA: [load_R_n16m, [cpu.registers.a]],
         0xFB: [enable_interrupts],
 
 
@@ -237,5 +240,11 @@ def run_opcode(opcode: int):
             args = mapping[opcode][1]
         mapping[opcode][0](*args)
         return opcode_cycles[opcode] if not cpu.reset_change_cycle() else opcode_cycles_changed[opcode]
-    except:
+    except Exception as err:
+        if type(err).__name__ == 'KeyError':
+            cpu.isCurrentInstructionImplemented = False
+            print(f'({hex(opcode)}) opcode is not implemented!')
+            exit(1)
+        print(f'({hex(opcode)}) opcode error!')
+        print(f'Exception type: {type(err).__name__}, message: {str(err)}')
         return 0
