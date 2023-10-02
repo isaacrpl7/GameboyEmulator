@@ -44,7 +44,7 @@ def run_opcode(opcode: int):
         0x00: [nop],
         0x01: [load_R_n16, [cpu.registers.bc]],
         0x02: [load_R1m_R2, [cpu.registers.bc, cpu.registers.a]],
-
+        0x03: [inc_r16, [cpu.registers.bc]],
         0x04: [inc_R, [cpu.registers.b]],
         0x05: [dec_R, [cpu.registers.b]],
         0x06: [load_R_n8, [cpu.registers.b]],
@@ -52,7 +52,7 @@ def run_opcode(opcode: int):
         0x08: [load_n16m_SP],
 
         0x0A: [load_R1_R2m, [cpu.registers.a, cpu.registers.bc]],
-
+        0x0B: [dec_r16, [cpu.registers.bc]],
         0x0C: [inc_R, [cpu.registers.c]],
         0x0D: [dec_R, [cpu.registers.c]],
         0x0E: [load_R_n8, [cpu.registers.c]],
@@ -60,7 +60,7 @@ def run_opcode(opcode: int):
 
         0x11: [load_R_n16, [cpu.registers.de]],
         0x12: [load_R1m_R2, [cpu.registers.de, cpu.registers.a]],
-
+        0x13: [inc_r16, [cpu.registers.de]],
         0x14: [inc_R, [cpu.registers.d]],
         0x15: [dec_R, [cpu.registers.d]],
         0x16: [load_R_n8, [cpu.registers.d]],
@@ -68,7 +68,7 @@ def run_opcode(opcode: int):
         0x18: [jr_nn],
 
         0x1A: [load_R1_R2m, [cpu.registers.a, cpu.registers.de]],
-
+        0x1B: [dec_r16, [cpu.registers.de]],
         0x1C: [inc_R, [cpu.registers.e]],
         0x1D: [dec_R, [cpu.registers.e]],
         0x1E: [load_R_n8, [cpu.registers.e]],
@@ -76,7 +76,7 @@ def run_opcode(opcode: int):
         0x20: [jr_cond, ["NZ"]],
         0x21: [load_R_n16, [cpu.registers.hl]],
         0x22: [load_inc_mR_R2, [cpu.registers.hl, cpu.registers.a]],
-
+        0x23: [inc_r16, [cpu.registers.hl]],
         0x24: [inc_R, [cpu.registers.h]],
         0x25: [dec_R, [cpu.registers.h]],
         0x26: [load_R_n8, [cpu.registers.h]],
@@ -84,7 +84,7 @@ def run_opcode(opcode: int):
         0x28: [jr_cond, ["Z"]],
 
         0x2A: [load_inc_R_R2m, [cpu.registers.a, cpu.registers.hl]],
-
+        0x2B: [dec_r16, [cpu.registers.hl]],
         0x2C: [inc_R, [cpu.registers.l]],
         0x2D: [dec_R, [cpu.registers.l]],
         0x2E: [load_R_n8, [cpu.registers.l]],
@@ -92,7 +92,7 @@ def run_opcode(opcode: int):
         0x30: [jr_cond, ["NC"]],
         0x31: [load_R_n16, [cpu.registers.sp]],
         0x32: [load_dec_mR_R2, [cpu.registers.hl, cpu.registers.a]],
-
+        0x33: [inc_r16, [cpu.registers.sp]],
         0x34: [inc_HLm],
         0x35: [dec_HLm],
         0x36: [load_Rm_n8, [cpu.registers.hl]],
@@ -100,7 +100,7 @@ def run_opcode(opcode: int):
         0x38: [jr_cond, ["C"]],
 
         0x3A: [load_dec_R_R2m, [cpu.registers.a, cpu.registers.hl]],
-
+        0x3B: [dec_r16, [cpu.registers.sp]],
         0x3C: [inc_R, [cpu.registers.a]],
         0x3D: [dec_R, [cpu.registers.a]],
         0x3E: [load_R_n8, [cpu.registers.a]],
@@ -173,11 +173,11 @@ def run_opcode(opcode: int):
         # ...
 
         0xC0: [ret_cond, ["NZ"]],
-
+        0xC1: [pop_R16, [cpu.registers.bc]],
         0xC2: [jp_cond, ["NZ"]],
         0xC3: [jp_nn],
         0xC4: [call_cond, ["NZ"]],
-
+        0xC5: [push_R16, [cpu.registers.bc]],
 
         0xC7: [rst, [0x0]],
         0xC8: [ret_cond, ["Z"]],
@@ -189,11 +189,11 @@ def run_opcode(opcode: int):
 
         0xCF: [rst, [0x08]],
         0xD0: [ret_cond, ["NC"]],
-
+        0xD1: [pop_R16, [cpu.registers.de]],
         0xD2: [jr_cond, ["NC"]],
 
         0xD4: [call_cond, ["NC"]],
-
+        0xD5: [push_R16, [cpu.registers.de]],
 
         0xD7: [rst, [0x10]],
         0xD8: [ret_cond, ["C"]],
@@ -205,8 +205,12 @@ def run_opcode(opcode: int):
 
         0xDF: [rst, [0x18]],
         0xE0: [load_io_A],
-        
+        0xE1: [pop_R16, [cpu.registers.hl]],
         0xE2: [load_ioC_A],
+
+
+
+        0xE5: [push_R16, [cpu.registers.hl]],
 
         0xE7: [rst, [0x20]],
 
@@ -218,14 +222,15 @@ def run_opcode(opcode: int):
 
         0xEF: [rst, [0x28]],
         0xF0: [load_A_io],
-
+        0xF1: [pop_R16, [cpu.registers.af]],
         0xF2: [load_A_ioC],
         0xF3: [disable_interrupts],
-        # ...
+        
+        0xF5: [push_R16, [cpu.registers.af]],
 
         0xF7: [rst, [0x30]],
 
-        # ...
+        
         0xFA: [load_R_n16m, [cpu.registers.a]],
         0xFB: [enable_interrupts],
 

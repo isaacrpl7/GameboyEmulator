@@ -523,3 +523,12 @@ def disable_interrupts():
 
 def enable_interrupts():
     cpu.interrupt_master_enabled = True
+
+# 16-bit arithmetic
+def inc_r16(register: RegisterPair):
+    """ Increment a 16-bit register """
+    register.increment()
+
+def dec_r16(register: RegisterPair):
+    """ Decrement a 16-bit register """
+    register.decrement()
