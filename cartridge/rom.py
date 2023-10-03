@@ -71,7 +71,7 @@ class Decoder:
         for i in instructions_dict['unprefixed'].values():
             self.regular_instructions.append(i)
         for i in instructions_dict['cbprefixed'].values():
-            self.regular_instructions.append(i)
+            self.prefixed_instructions.append(i)
 
     def get_bytes(self, loc, cpu, size=1):
         data = []
