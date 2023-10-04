@@ -39,6 +39,25 @@ opcode_cycles_changed = [ # Some instructions change their cycle number based on
     3, 3, 2, 1, 0, 4, 2, 4, 3, 2, 4, 1, 0, 0, 2, 4
 ]
 
+prefixed_opcode_cycles = [
+    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
+    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
+    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
+    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
+    2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 3, 2,
+    2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 3, 2,
+    2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 3, 2,
+    2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 3, 2,
+    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
+    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
+    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
+    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
+    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
+    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
+    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
+    2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2
+]
+
 def run_opcode(opcode: int):
     mapping = {
         0x00: [nop],
@@ -300,19 +319,36 @@ def run_opcode(opcode: int):
         0xFE: [cp_A_n8],
         0xFF: [rst, [0x38]]
     }
-    args = []
+
+    mapping_prefixed = {
+
+    }
+
+    def execute_from_map(opcode_map, opcode):
+        args = []
+        # The opcode in dict is an array. It can be of size 1 or 2. If it is of size 2, there are parameters to be used.
+        if len(opcode_map[opcode]) == 2:
+            args = opcode_map[opcode][1]
+        # Execute the function. (It is always present in the first position of the array)
+        opcode_map[opcode][0](*args)
+
+    prefixed = False
     try:
-        if len(mapping[opcode]) == 2:
-            args = mapping[opcode][1]
-        mapping[opcode][0](*args)
-        return opcode_cycles[opcode] if not cpu.reset_change_cycle() else opcode_cycles_changed[opcode]
+        if opcode == 0xcb:
+            prefixed = True
+            opcode = cpu.read_byte_from_pc()
+            execute_from_map(mapping_prefixed, opcode)
+            return prefixed_opcode_cycles[opcode]
+        else:
+            execute_from_map(mapping, opcode)
+            return opcode_cycles[opcode] if not cpu.reset_change_cycle() else opcode_cycles_changed[opcode]
     except Exception as err:
         if type(err).__name__ == 'KeyError':
             cpu.isCurrentInstructionImplemented = False
-            print(f'({hex(opcode)}) opcode is not implemented!')
+            print(f'({hex(opcode)}) {"(prefixed)" if prefixed else ""} opcode is not implemented!')
             exit(1)
-        print(f'({hex(opcode)}) opcode error!')
+        print(f'({hex(opcode)}) {"(prefixed)" if prefixed else ""} opcode error!')
         print(f'Exception type: {type(err).__name__}, message: {str(err)}')
         print(f'pc: {hex(cpu.registers.pc.get_value())}')
-        print(f'Last read address: {hex(cpu.mmu.last_read_address)}')
+        print(f'Last memory read address: {hex(cpu.mmu.last_read_address)}')
         return 0

@@ -23,12 +23,14 @@ def step():
         return 1
 
     # Decode instruction from ROM
-    decoder = Decoder(cartridge_controller.cartridge.rom.memory_array)
+    decoder = Decoder()
     next_addr, inst = decoder.decode_from(cpu.registers.pc.get_value(), cpu)
     addr = cpu.registers.pc.get_value()
     #print(f'{hex(cpu.registers.pc.get_value())} {decoder.print_instruction(inst)}')
 
     opcode = cpu.read_byte_from_pc()
+    if opcode == 0xcb:
+        print(decoder.print_instruction(inst))
     
     # Implement and execute opcode map
     cycles = run_opcode(opcode)

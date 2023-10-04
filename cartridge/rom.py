@@ -59,7 +59,6 @@ class ROM:
 
 @dataclass
 class Decoder:
-    bytearray_to_decode: bytearray
     address: int=0
     regular_instructions: list = field(default_factory=list)
     prefixed_instructions: list = field(default_factory=list)

@@ -35,9 +35,11 @@ class Register:
     
     def increment(self):
         self.value += 1
+        return self.value
         
     def decrement(self):
         self.value -= 1
+        return self.value
 
 """
 7	z	Zero flag
@@ -98,10 +100,12 @@ class RegisterPair:
     def increment(self):
         new_value = self.get_value() + 1
         self.set_value(new_value)
+        return new_value
         
     def decrement(self):
         new_value = self.get_value() - 1
         self.set_value(new_value)
+        return new_value
     
 
 
