@@ -524,7 +524,7 @@ def disable_interrupts():
 def enable_interrupts():
     cpu.interrupt_master_enabled = True
 
-# 16-bit arithmetic
+# 16-BIT ARITHMETIC
 def inc_r16(register: RegisterPair):
     """ Increment a 16-bit register """
     register.increment()
@@ -532,3 +532,84 @@ def inc_r16(register: RegisterPair):
 def dec_r16(register: RegisterPair):
     """ Decrement a 16-bit register """
     register.decrement()
+
+# ROTATE AND SHIFT INSTRUCTIONS
+def _rl_value(value):
+    """ RL: Rotate Left through carry """
+    last_bit_before_rotate = get_bit(value, 7)
+    carry = cpu.registers.f.get_flag_carry()
+    value = value << 1
+    value = set_bit(value, 0, carry)
+
+    cpu.registers.f.set_flag_zero(value == 0)
+    cpu.registers.f.set_flag_subtract(False)
+    cpu.registers.f.set_flag_half_carry(False)
+    cpu.registers.f.set_flag_carry(last_bit_before_rotate)
+
+    return value
+
+def CB_rl_r(register: Register):
+    result = _rl_value(register.get_value())
+    register.set_value(result)
+
+def CB_rl_HLm():
+    address = cpu.registers.hl.get_value()
+    byte = cpu.mmu.read_address(address)
+    result = _rl_value(byte)
+    cpu.mmu.write_address(address, result)
+
+def rl_a():
+    result = _rl_value(cpu.registers.a.get_value())
+    cpu.registers.a.set_value(result)
+    cpu.registers.f.set_flag_zero(False)
+
+def _rr_value(value):
+    """ RR: Rotate Right through carry """
+    first_bit_before_rotate = get_bit(value, 0)
+    carry = cpu.registers.f.get_flag_carry()
+    value = value >> 1
+    value = set_bit(value, 7, carry)
+
+    cpu.registers.f.set_flag_zero(value == 0)
+    cpu.registers.f.set_flag_subtract(False)
+    cpu.registers.f.set_flag_half_carry(False)
+    cpu.registers.f.set_flag_carry(first_bit_before_rotate)
+
+    return value
+
+def CB_rr_r(register: Register):
+    result = _rr_value(register.get_value())
+    register.set_value(result)
+
+def CB_rr_HLm():
+    address = cpu.registers.hl.get_value()
+    byte = cpu.mmu.read_address(address)
+    result = _rr_value(byte)
+    cpu.mmu.write_address(address, result)
+
+def rr_a():
+    result = _rr_value(cpu.registers.a.get_value())
+    cpu.registers.a.set_value(result)
+    cpu.registers.f.set_flag_zero(False)
+
+def _srl_value(value):
+    """ SRL: Shift right logical. Flags affected: Z and C. """
+    first_bit_before_shift = get_bit(value, 0)
+    value = value >> 1
+
+    cpu.registers.f.set_flag_zero(value == 0)
+    cpu.registers.f.set_flag_subtract(False)
+    cpu.registers.f.set_flag_half_carry(False)
+    cpu.registers.f.set_flag_carry(first_bit_before_shift)
+
+    return value
+
+def CB_srl_r(register: Register):
+    result = _srl_value(register.get_value())
+    register.set_value(result)
+
+def CB_srl_HLm():
+    address = cpu.registers.hl.get_value()
+    byte = cpu.mmu.read_address(address)
+    result = _srl_value(byte)
+    cpu.mmu.write_address(address, result)

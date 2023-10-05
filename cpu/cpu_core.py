@@ -8,7 +8,7 @@ from cpu.utils import compose_bytes, get_bit, set_bit
 class CPU:
     
     def __init__(self):
-        self.registers = CPURegisters()
+        self.registers = CPURegisters(cpu=self)
         self.change_cycle = False
 
         # Interrupts

@@ -83,7 +83,7 @@ def run_opcode(opcode: int):
         0x14: [inc_R, [cpu.registers.d]],
         0x15: [dec_R, [cpu.registers.d]],
         0x16: [load_R_n8, [cpu.registers.d]],
-
+        0x17: [rl_a],
         0x18: [jr_nn],
 
         0x1A: [load_R1_R2m, [cpu.registers.a, cpu.registers.de]],
@@ -91,7 +91,7 @@ def run_opcode(opcode: int):
         0x1C: [inc_R, [cpu.registers.e]],
         0x1D: [dec_R, [cpu.registers.e]],
         0x1E: [load_R_n8, [cpu.registers.e]],
-
+        0x1F: [rr_a],
         0x20: [jr_cond, ["NZ"]],
         0x21: [load_R_n16, [cpu.registers.hl]],
         0x22: [load_inc_mR_R2, [cpu.registers.hl, cpu.registers.a]],
@@ -321,7 +321,31 @@ def run_opcode(opcode: int):
     }
 
     mapping_prefixed = {
+        0x10: [CB_rl_r, [cpu.registers.b]],
+        0x11: [CB_rl_r, [cpu.registers.c]],
+        0x12: [CB_rl_r, [cpu.registers.d]],
+        0x13: [CB_rl_r, [cpu.registers.e]],
+        0x14: [CB_rl_r, [cpu.registers.h]],
+        0x15: [CB_rl_r, [cpu.registers.l]],
+        0x16: [CB_rl_HLm],
+        0x17: [CB_rl_r, [cpu.registers.a]],
+        0x18: [CB_rr_r, [cpu.registers.b]],
+        0x19: [CB_rr_r, [cpu.registers.c]],
+        0x1A: [CB_rr_r, [cpu.registers.d]],
+        0x1B: [CB_rr_r, [cpu.registers.e]],
+        0x1C: [CB_rr_r, [cpu.registers.h]],
+        0x1D: [CB_rr_r, [cpu.registers.l]],
+        0x1E: [CB_rr_HLm],
+        0x1F: [CB_rr_r, [cpu.registers.a]],
 
+        0x38: [CB_srl_r, [cpu.registers.b]],
+        0x39: [CB_srl_r, [cpu.registers.c]],
+        0x3A: [CB_srl_r, [cpu.registers.d]],
+        0x3B: [CB_srl_r, [cpu.registers.e]],
+        0x3C: [CB_srl_r, [cpu.registers.h]],
+        0x3D: [CB_srl_r, [cpu.registers.l]],
+        0x3E: [CB_srl_HLm],
+        0x3F: [CB_srl_r, [cpu.registers.a]],
     }
 
     def execute_from_map(opcode_map, opcode):

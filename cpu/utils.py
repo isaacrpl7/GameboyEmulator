@@ -5,14 +5,14 @@ def decompose_bytes(bytes):
     return bytes >> 8, bytes & 0xFF
 
 def set_bit(byte, bit_position, value):
-    """ Set a bit in a byte to a value at bit_position """
+    """ Set a bit in a byte to a value at bit_position (the 0 position is the right-most bit) """
     if not value:
-        return byte & (0xFE << bit_position)
+        return byte & ((0x01 << bit_position) ^ 0xFF)
     else:
         return byte | (0x01 << bit_position)
 
 def get_bit(byte, bit_position):
-    """ Return a bit of a byte at bit_position """
+    """ Return a bit of a byte at bit_position (the 0 position is the right-most bit) """
     return (byte & (0x01 << bit_position)) >> bit_position
 
 def address_in_range(address, lower, upper):

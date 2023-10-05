@@ -48,13 +48,25 @@ class Register:
 4	c	Carry flag
 """
 class FlagRegister(Register):
+    def __init__(self, value, cpu, size=8):
+        super().__init__(value, size)
+        self.cpu = cpu
+    
+    def set_value(self, value):
+        if value < 2**self.size:
+            self.value = value & 0xF0
+        else:
+            raise ValueError(f'FlagRegister value of {hex(value)} exceeds capacity of {hex(2**self.size)}!')
+
     def set_flag_zero(self, value):
         self.value = set_bit(self.value, 7, value)
 
     def set_flag_subtract(self, value):
+        # print(f'Setting subtract flag {value}, PC: {hex(self.cpu.registers.pc.get_value())}')
         self.value = set_bit(self.value, 6, value)
 
     def set_flag_half_carry(self, value):
+        # print(f'Setting half carry flag {value}, PC: {hex(self.cpu.registers.pc.get_value())}')
         self.value = set_bit(self.value, 5, value)
 
     def set_flag_carry(self, value):
@@ -111,9 +123,9 @@ class RegisterPair:
 
 class CPURegisters:
 
-    def __init__(self):
+    def __init__(self, cpu):
         self.a = Register(0x0)
-        self.f = FlagRegister(0x0)
+        self.f = FlagRegister(0x0, cpu=cpu)
         self.b = Register(0x0)
         self.c = Register(0x0)
         self.d = Register(0x0)
@@ -124,7 +136,7 @@ class CPURegisters:
         self.sp = Register(0xFFFE, 16) # starts in 0xFFFE
         self.pc = Register(0x100, 16) # starts in 0x100
 
-        self.af = RegisterPair(self.b, self.c)
+        self.af = RegisterPair(self.a, self.f)
         self.bc = RegisterPair(self.b, self.c)
         self.de = RegisterPair(self.d, self.e)
         self.hl = RegisterPair(self.h, self.l)

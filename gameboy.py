@@ -41,6 +41,7 @@ def step():
     # cpu_gui.update_registers(cpu.return_registers())
 
 # cpu_gui.init_gui(cpu.return_registers(), step)
-for i in range(100000):
+#cpu.registers.pc.get_value() != 0xC05A
+while True:
     step()
 # sys.exit(app.exec_())
