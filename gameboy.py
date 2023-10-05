@@ -29,8 +29,8 @@ def step():
     #print(f'{hex(cpu.registers.pc.get_value())} {decoder.print_instruction(inst)}')
 
     opcode = cpu.read_byte_from_pc()
-    if opcode == 0xcb:
-        print(decoder.print_instruction(inst))
+    # if opcode == 0xcb:
+    #     print(decoder.print_instruction(inst))
     
     # Implement and execute opcode map
     cycles = run_opcode(opcode)

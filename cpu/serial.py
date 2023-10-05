@@ -14,4 +14,4 @@ class Serial:
     def write_serial_control(self, byte):
         if get_bit(byte, 7):
             print(f'Serial: {chr(self.data)}')
-            print(f'Serial: {self.data} (Number format)')
+            # print(f'Serial: {self.data} (Number format)')
