@@ -310,7 +310,7 @@ def run_opcode(opcode: int):
         0xF6: [or_A_n8],
         0xF7: [rst, [0x30]],
 
-        
+        0xF9: [load_SP_HL],
         0xFA: [load_R_n16m, [cpu.registers.a]],
         0xFB: [enable_interrupts],
 

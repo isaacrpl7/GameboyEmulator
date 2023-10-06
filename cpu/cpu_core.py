@@ -86,7 +86,7 @@ class CPU:
         """ Functions like a call instruction. Push PC to stack, see the allowed interruptions in priority order, change PC to the respective interrupt address, 
         and then set low the bit of the interruption flag """
         if self.interrupt_master_enabled:
-            allowed_interrupts = self.interrupt_flag & self.interrupt_enabled
+            allowed_interrupts = self.interrupt_flag.get_value() & self.interrupt_enabled.get_value()
 
             if allowed_interrupts == 0x0: # If there's no interrupt, just return
                 return
