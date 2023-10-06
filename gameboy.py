@@ -9,7 +9,7 @@ import sys
 from gui.cpu_display import QTCPUDisplay
 from PyQt5 import QtWidgets
 
-rom.load_file('test_roms/06-load.gb')
+rom.load_file('test_roms/07-jr,jp,call,ret,rst.gb')
 cartridge_controller.load_cartridge_type_from_rom(rom)
 
 # if __name__ == "__main__":

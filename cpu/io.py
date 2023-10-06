@@ -30,7 +30,7 @@ class IO:
 
         if address == 0xFF02:
             # print('Wrote to Serial Control')
-            # print(f'PC: {self.cpu.registers.pc.get_value()}')
+            # print(f'PC: {hex(self.cpu.registers.pc.get_value())}')
             self.cpu.serial.write_serial_control(byte)
             
         # Write interrupt flag

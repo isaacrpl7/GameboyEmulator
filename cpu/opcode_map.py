@@ -69,7 +69,7 @@ def run_opcode(opcode: int):
         0x06: [load_R_n8, [cpu.registers.b]],
 
         0x08: [load_n16m_SP],
-
+        0x09: [add_HL_rr, [cpu.registers.bc]],
         0x0A: [load_R1_R2m, [cpu.registers.a, cpu.registers.bc]],
         0x0B: [dec_r16, [cpu.registers.bc]],
         0x0C: [inc_R, [cpu.registers.c]],
@@ -85,7 +85,7 @@ def run_opcode(opcode: int):
         0x16: [load_R_n8, [cpu.registers.d]],
         0x17: [rl_a],
         0x18: [jr_nn],
-
+        0x19: [add_HL_rr, [cpu.registers.de]],
         0x1A: [load_R1_R2m, [cpu.registers.a, cpu.registers.de]],
         0x1B: [dec_r16, [cpu.registers.de]],
         0x1C: [inc_R, [cpu.registers.e]],
@@ -101,7 +101,7 @@ def run_opcode(opcode: int):
         0x26: [load_R_n8, [cpu.registers.h]],
         0x27: [daa],
         0x28: [jr_cond, ["Z"]],
-
+        0x29: [add_HL_rr, [cpu.registers.hl]],
         0x2A: [load_inc_R_R2m, [cpu.registers.a, cpu.registers.hl]],
         0x2B: [dec_r16, [cpu.registers.hl]],
         0x2C: [inc_R, [cpu.registers.l]],
@@ -117,7 +117,7 @@ def run_opcode(opcode: int):
         0x36: [load_Rm_n8, [cpu.registers.hl]],
 
         0x38: [jr_cond, ["C"]],
-
+        0x39: [add_HL_rr, [cpu.registers.sp]],
         0x3A: [load_dec_R_R2m, [cpu.registers.a, cpu.registers.hl]],
         0x3B: [dec_r16, [cpu.registers.sp]],
         0x3C: [inc_R, [cpu.registers.a]],
@@ -374,5 +374,6 @@ def run_opcode(opcode: int):
         print(f'({hex(opcode)}) {"(prefixed)" if prefixed else ""} opcode error!')
         print(f'Exception type: {type(err).__name__}, message: {str(err)}')
         print(f'pc: {hex(cpu.registers.pc.get_value())}')
+        print(f'sp: {hex(cpu.registers.sp.get_value())}')
         print(f'Last memory read address: {hex(cpu.mmu.last_read_address)}')
         return 0

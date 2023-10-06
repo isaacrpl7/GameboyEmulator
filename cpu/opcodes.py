@@ -111,7 +111,8 @@ def load_n16m_SP():
     """ ld (nn),SP
         Load from Stack Pointer to the memory address pointed by 2 bytes fetched from PC """
     address = cpu.read_word_from_pc()
-    cpu.mmu.write_address(address, cpu.registers.sp.get_value())
+    cpu.mmu.write_address(address, cpu.registers.sp.get_lsb())
+    cpu.mmu.write_address(address+1, cpu.registers.sp.get_msb())
 
 def load_SP_HL():
     """ ld SP,HL
@@ -525,6 +526,18 @@ def enable_interrupts():
     cpu.interrupt_master_enabled = True
 
 # 16-BIT ARITHMETIC
+def add_HL_rr(register: RegisterPair):
+    content = register.get_value()
+    hl_value = cpu.registers.hl.get_value()
+    value = content + hl_value
+
+    cpu.registers.f.set_flag_subtract(False)
+    cpu.registers.f.set_flag_half_carry((content & 0xFFF) + (hl_value & 0xFFF) > 0xFFF)
+    cpu.registers.f.set_flag_carry(value > 0xFFFF)
+
+    cpu.registers.hl.set_value(value & 0xFFFF)
+
+
 def inc_r16(register: RegisterPair):
     """ Increment a 16-bit register """
     register.increment()
